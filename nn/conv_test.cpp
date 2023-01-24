@@ -10,10 +10,10 @@ void test1() {
 
     /* init input */
     int count = 1;
-    float *i = input.getFirst();
+    float *i = input.begin();
     while (i) {
         *i = count;
-        input.getNext(i);
+        input.next(i);
         count++;
     }
 
@@ -22,10 +22,10 @@ void test1() {
     Tensor<float> weight;
     weight.init(2, 3, 2, 2);
     count = 1;
-    i = weight.getFirst();
+    i = weight.begin();
     while (i) {
         *i = count;
-        weight.getNext(i);
+        weight.next(i);
         count++;
     }
     conv.setWeight(weight);
@@ -33,10 +33,10 @@ void test1() {
     Tensor<float> bias;
     bias.init(2);
     count = 1;
-    i = bias.getFirst();
+    i = bias.begin();
     while (i) {
         *i = count;
-        bias.getNext(i);
+        bias.next(i);
         count++;
     }
     conv.setBias(bias);
@@ -67,10 +67,10 @@ void test2() {
 
     /* init input */
     int count = 1;
-    float *i = input.getFirst();
+    float *i = input.begin();
     while (i) {
         *i = count;
-        input.getNext(i);
+        input.next(i);
         count++;
     }
 
@@ -79,10 +79,10 @@ void test2() {
     Tensor<float> weight;
     weight.init(2, 3, 2, 2);
     count = 1;
-    i = weight.getFirst();
+    i = weight.begin();
     while (i) {
         *i = count;
-        weight.getNext(i);
+        weight.next(i);
         count++;
     }
     conv.setWeight(weight);
@@ -90,10 +90,10 @@ void test2() {
     Tensor<float> bias;
     bias.init(2);
     count = 1;
-    i = bias.getFirst();
+    i = bias.begin();
     while (i) {
         *i = count;
-        bias.getNext(i);
+        bias.next(i);
         count++;
     }
     conv.setBias(bias);
@@ -127,10 +127,10 @@ void test3() {
 
     /* init input */
     int count = 1;
-    float *i = input.getFirst();
+    float *i = input.begin();
     while (i) {
         *i = count;
-        input.getNext(i);
+        input.next(i);
         count++;
     }
 
@@ -138,10 +138,10 @@ void test3() {
     Tensor<float> weight;
     weight.init(2, 5, 2);
     count = 1;
-    i = weight.getFirst();
+    i = weight.begin();
     while (i) {
         *i = count;
-        weight.getNext(i);
+        weight.next(i);
         count++;
     }
     conv.setWeight(weight);
@@ -149,10 +149,10 @@ void test3() {
     Tensor<float> bias;
     bias.init(2);
     count = 1;
-    i = bias.getFirst();
+    i = bias.begin();
     while (i) {
         *i = count;
-        bias.getNext(i);
+        bias.next(i);
         count++;
     }
     conv.setBias(bias);

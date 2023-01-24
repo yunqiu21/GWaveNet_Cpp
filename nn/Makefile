@@ -4,6 +4,5 @@ tensor_test: tensor_test.cpp tensor.h
 conv_test: conv_test.cpp tensor.h module.h
 	g++ -std=c++14 conv_test.cpp -o conv_test
 
-
 clean: 
 	rm *_test

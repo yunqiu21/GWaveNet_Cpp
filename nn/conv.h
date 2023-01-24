@@ -32,18 +32,18 @@ protected:
         std::uniform_real_distribution<> dis(-stdv, stdv);
 
         {
-            float *w = weight.getFirst();
+            float *w = weight.begin();
             while (w) {
                 *w = dis(gen);
-                weight.getNext(w);
+                weight.next(w);
             }
         }
 
         if (bias.isInit()) {
-            float *b = bias.getFirst();
+            float *b = bias.begin();
             while (b) {
                 *b = dis(gen);
-                bias.getNext(b);
+                bias.next(b);
             }
         }
     }

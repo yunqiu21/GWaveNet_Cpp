@@ -21,10 +21,10 @@ int main() {
     }
 
     cout << "tensor value: ";
-    int *val = t.getFirst();
+    int *val = t.begin();
     while (val) {
         cout << *val << " ";
-        t.getNext(val);
+        t.next(val);
     }
     cout << endl;
 
