@@ -81,3 +81,13 @@ public:
     };
     void backward(){};
 };
+
+class Dropout : public Module {
+private:
+public:
+    // FIXME: not implemented
+    void forward(Tensor<float> &input, Tensor<float> &output) {
+        output = input;
+    };
+    void backward(){};
+};
