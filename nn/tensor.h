@@ -132,8 +132,9 @@ public:
     void getNext(T *&cur) {
         if (data && cur - data + 1 < dataCount) {
             cur++;
+        } else {
+            cur = nullptr;
         }
-        cur = nullptr;
     }
 
     ~Tensor() {
