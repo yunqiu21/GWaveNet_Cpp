@@ -1,6 +1,5 @@
 #include "assert.h"
-
-using namespace std;
+#include <string.h>
 
 // Tensor
 template <typename T>
@@ -18,8 +17,45 @@ public:
         dim = 0;
     };
 
-    // disable copy constructor, need deep copy
-    Tensor operator=(const Tensor &) = delete;
+    // copy constructor, use deep copy
+    Tensor operator=(const Tensor &t) {
+        Tensor newTensor;
+        newTensor.init(t.shape, t.dim);
+        memcpy(newTensor.data, t.data, t.dataCount * sizeof(T));
+    };
+
+    bool copyData(const Tensor &src) {
+        // check shape
+        if (src.dim == dim && memcmp(src.shape, shape, dim * sizeof(T)) == 0) {
+            memcpy(data, src.data, dataCount * sizeof(T));
+            return true;
+        }
+        return false;
+    }
+
+    bool isSame(const Tensor &src) {
+        // check shape
+        return src.dim == dim &&
+               memcmp(src.shape, shape, dim * sizeof(T)) == 0 &&
+               memcmp(data, src.data, dataCount * sizeof(T)) == 0;
+    }
+
+    void init(const int *s, int d) {
+        if (d == 0) {
+            return;
+        }
+        dim = d;
+
+        shape = new int[d];
+        memcpy(shape, s, d * sizeof(int));
+
+        dataCount = 1;
+        for (int i = 0; i < dim; i++) {
+            dataCount *= s[i];
+        }
+
+        data = new T[dataCount];
+    };
 
     // 1D Tensor
     void init(int size) {
@@ -93,11 +129,11 @@ public:
         return data;
     }
 
-    T *getNext(T *cur) {
+    void getNext(T *&cur) {
         if (data && cur - data + 1 < dataCount) {
-            return cur + 1;
+            cur++;
         }
-        return nullptr;
+        cur = nullptr;
     }
 
     ~Tensor() {

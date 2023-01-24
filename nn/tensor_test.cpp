@@ -23,7 +23,7 @@ int main() {
     int *val = t.getFirst();
     while (val) {
         cout << "*" << *val << endl;
-        val = t.getNext(val);
+        t.getNext(val);
     }
 
     return 0;
