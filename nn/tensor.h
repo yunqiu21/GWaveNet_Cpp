@@ -137,6 +137,10 @@ public:
         }
     }
 
+    void setData(T *d) {
+        memcpy(data, d, dataCount * sizeof(T));
+    }
+
     ~Tensor() {
         if (data) {
             delete[] data;

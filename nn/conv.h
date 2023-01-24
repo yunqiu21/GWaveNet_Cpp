@@ -35,7 +35,7 @@ protected:
             float *w = weight.getFirst();
             while (w) {
                 *w = dis(gen);
-                w = weight.getNext(w);
+                weight.getNext(w);
             }
         }
 
@@ -43,7 +43,7 @@ protected:
             float *b = bias.getFirst();
             while (b) {
                 *b = dis(gen);
-                b = bias.getNext(b);
+                bias.getNext(b);
             }
         }
     }
@@ -52,8 +52,8 @@ public:
     _ConvNd(int in_channels, int out_channels, int kernel_h, int kernel_w,
             int dilation, bool needBias) : in_channels(in_channels), out_channels(out_channels),
                                            kernel_h(kernel_h), kernel_w(kernel_w), dilation(dilation) {
-        if (kernel_w == 0) {
-            weight.init(out_channels, in_channels, kernel_h); // for conv1D
+        if (kernel_h == 0) {
+            weight.init(out_channels, in_channels, kernel_w); // for conv1D
         } else {
             weight.init(out_channels, in_channels, kernel_h, kernel_w); // for conv2D
         }
@@ -102,7 +102,7 @@ public:
     // input: [N][in_channels][L]
     // output: [N][out_channels][L-m_dilation(kernelW-1)]
     void forward(Tensor<float> &input, Tensor<float> &output) {
-        assert(input.isInit() && input.getDim() == 3);
+        assert(input.isInit() && input.getDim() == 3 && input.getShape()[1] == in_channels);
         assert(!output.isInit());
         const int *shape = input.getShape();
         int N = shape[0];
@@ -111,18 +111,15 @@ public:
 
         /* calulate output shape */
         int outL = L - dilation * (kernel_w - 1);
-        output.init(N, C, outL);
+        output.init(N, out_channels, outL);
 
         for (int n = 0; n < N; n++) {
             /* set bias */
             for (int c = 0; c < out_channels; c++) {
-                for (int h = 0; h < outL; h++) {
-                    for (int w = 0; w < outL; w++) {
-                        output(n, c, h, w) = bias(c); // change to memset
-                    }
+                for (int l = 0; l < outL; l++) {
+                    output(n, c, l) = bias(c); // change to memset
                 }
             }
-
             /* convolution */
             for (int i = 0; i < out_channels; i++) {
                 for (int j = 0; j < in_channels; j++) {
@@ -147,14 +144,13 @@ public:
     // input: [N][in_channels][H][W]
     // output: [N][out_channels][H-dilation(KernalH-1)][W-dilation(kernelW-1)]
     void forward(Tensor<float> &input, Tensor<float> &output) {
-        assert(input.isInit() && input.getDim() == 4);
+        assert(input.isInit() && input.getDim() == 4 && input.getShape()[1] == in_channels);
         assert(!output.isInit());
         const int *shape = input.getShape();
         int N = shape[0];
         int C = shape[1];
         int H = shape[2];
         int W = shape[3];
-        cout << N << C << H << W << endl;
 
         /* calulate output shape */
         int outH = H - dilation * (kernel_h - 1);
