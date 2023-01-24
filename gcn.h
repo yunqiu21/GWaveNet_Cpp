@@ -47,6 +47,6 @@ public:
 
         Tensor<float> out1;
         mlp.forward(out, out1);
-        dropout(out1, output);
+        dropout.forward(out1, output);
     }
 };
