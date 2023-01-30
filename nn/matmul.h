@@ -1,6 +1,8 @@
 #include "module.h"
 #include <cassert>
 
+// TODO: store input for backward
+
 // element wise multiplication
 void mul(Tensor<float> &t1, Tensor<float> &t2, Tensor<float> &output) {
     output = t1;
