@@ -1,6 +1,7 @@
 #include "module.h"
 #include <algorithm>
 #include <cmath>
+#include <random>
 
 // save output for backward
 class ReLU : public Module {
@@ -84,10 +85,25 @@ public:
 
 class Dropout : public Module {
 private:
+    const float p;
+
 public:
-    // FIXME: not implemented
-    void forward(Tensor<float> &input, Tensor<float> &output) {
+    Dropout(float p) : p(p) {}
+
+    void forward(Tensor<float> &input, Tensor<float> &output, bool training = false) {
+        // should do nothing when not training
         output = input;
+        if (training) {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::bernoulli_distribution d(p);
+            float *it = output.begin();
+            while (it) {
+                if (d(gen))
+                    *it = 0;
+                output.next(it);
+            }
+        }
     };
     void backward(){};
 };
