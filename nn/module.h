@@ -1,4 +1,6 @@
+#include "string.h"
 #include "tensor.h"
+#include <cassert>
 
 // TODO: Use RealType?
 class Module {

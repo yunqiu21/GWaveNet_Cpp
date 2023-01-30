@@ -1,8 +1,7 @@
 #include "activation.h"
 #include "matmul.h"
 #include "module.h"
-
-#define NUM_NODES 207
+#include <random>
 
 class Adp : public Module {
 private:
@@ -12,10 +11,27 @@ private:
     Softmax softmax;
 
 public:
-    Adp() {
-        nodevec1.init(NUM_NODES, 10);
-        nodevec2.init(10, NUM_NODES);
+    Adp(int num_nodes) {
+        nodevec1.init(num_nodes, 10);
+        nodevec2.init(10, num_nodes);
     }
+
+    void randomInit() {
+        std::default_random_engine generator;
+        std::normal_distribution<float> distribution(0.0, 1.0);
+
+        float *it = nodevec1.begin();
+        while (it) {
+            *it = distribution(generator);
+            nodevec1.next(it);
+        }
+
+        float *it = nodevec2.begin();
+        while (it) {
+            *it = distribution(generator);
+            nodevec2.next(it);
+        }
+    };
 
     void forward(Tensor<float> &output) {
         Tensor<float> out1;
