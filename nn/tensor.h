@@ -1,5 +1,8 @@
-#include "assert.h"
-#include <string.h>
+#ifndef TENSOR_H
+#define TENSOR_H
+
+#include <cassert>
+#include <cstring>
 
 // Tensor
 template <typename T>
@@ -7,7 +10,7 @@ class Tensor {
 protected:
     T *data;
     int dataCount;
-    const int *shape;
+    int *shape;
     int dim;
 
 public:
@@ -67,12 +70,12 @@ Tensor<T>::~Tensor() {
     }
 };
 
-// copy constructor, use deep copy
 template <typename T>
 Tensor<T> Tensor<T>::operator=(const Tensor<T> &t) {
     Tensor newTensor;
     newTensor.init(t.shape, t.dim);
-    memcpy(newTensor.data, t.data, t.dataCount * sizeof(T));
+    std::memcpy(newTensor.data, t.data, t.dataCount * sizeof(T));
+    return newTensor;
 };
 
 template <typename T>
@@ -243,8 +246,10 @@ Tensor<T> Tensor<T>::operator+(Tensor<T> const &t) {
 
     Tensor<T> result = t;
     for (int i = 0; i < dataCount; i++) {
-        result[i] += data[i];
+        result.data[i] += data[i];
     }
 
     return result;
 }
+
+#endif

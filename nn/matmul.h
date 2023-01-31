@@ -1,4 +1,7 @@
-#include "module.h"
+#ifndef MATMUL_H
+#define MATMUL_H
+
+#include "tensor.h"
 #include <cassert>
 
 // TODO: store input for backward
@@ -32,3 +35,5 @@ void matmul2D(Tensor<float> &t1, Tensor<float> &t2, Tensor<float> &output) {
         }
     }
 }
+
+#endif

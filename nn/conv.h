@@ -1,23 +1,26 @@
+#ifndef CONV_H
+#define CONV_H
+
 // convolutional layer in C++
 // official pytorch implementation:
 //   https://github.com/pytorch/pytorch/blob/08891b0a4e08e2c642deac2042a02238a4d34c67/torch/nn/modules/conv.py
 
-#include "assert.h"
-#include "module.h"
+#include "tensor.h"
+#include <cassert>
 #include <cmath>
+#include <cstring>
 #include <iostream>
 #include <random>
-#include <string.h>
 
 using namespace std;
 
-class _ConvNd : public Module {
+class _ConvNd {
 protected:
-    const int in_channels;  // input channel
-    const int out_channels; // output channel
-    const int kernel_h;     // not a general definition, kernal is 2 dimentional
-    const int kernel_w;
-    const int dilation;
+    int in_channels;  // input channel
+    int out_channels; // output channel
+    int kernel_h;     // not a general definition, kernal is 2 dimentional
+    int kernel_w;
+    int dilation;
 
     Tensor<float> weight; // shape (kernel_h * kernel_w)
     Tensor<float> bias;   // shape (out_channels)
@@ -49,6 +52,8 @@ protected:
     }
 
 public:
+    _ConvNd(){};
+
     _ConvNd(int in_channels, int out_channels, int kernel_h, int kernel_w,
             int dilation, bool needBias) : in_channels(in_channels), out_channels(out_channels),
                                            kernel_h(kernel_h), kernel_w(kernel_w), dilation(dilation) {
@@ -138,6 +143,8 @@ public:
 
 class Conv2d : public _ConvNd {
 public:
+    Conv2d(){};
+
     Conv2d(int in_channels, int out_channels, int kernel_h, int kernel_w,
            int dilation = 1, bool bias = true) : _ConvNd(in_channels, out_channels, kernel_h, kernel_w, dilation, bias) {}
 
@@ -188,3 +195,5 @@ public:
 
     void backward() {}
 };
+
+#endif

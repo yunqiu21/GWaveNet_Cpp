@@ -1,9 +1,6 @@
 #include "adp.h"
-#include "batchnorm.h"
 #include "gcn.h"
-#include "list.h"
-#include "module.h"
-#include "nn/conv.h"
+#include "nn/batchnorm.h"
 #include <cassert>
 
 class GWaveNet {
@@ -146,3 +143,7 @@ public:
         end_conv1.forward(skip_relu2, output);
     };
 };
+
+int main() {
+    GWaveNet(207);
+}

@@ -1,9 +1,11 @@
-#include "activation.h"
-#include "matmul.h"
-#include "module.h"
+#ifndef ADP_H
+#define ADP_H
+
+#include "nn/activation.h"
+#include "nn/matmul.h"
 #include <random>
 
-class Adp : public Module {
+class Adp {
 private:
     Tensor<float> nodevec1;
     Tensor<float> nodevec2;
@@ -26,7 +28,7 @@ public:
             nodevec1.next(it);
         }
 
-        float *it = nodevec2.begin();
+        it = nodevec2.begin();
         while (it) {
             *it = distribution(generator);
             nodevec2.next(it);
@@ -43,3 +45,5 @@ public:
         softmax.forward(out2, output);
     }
 };
+
+#endif

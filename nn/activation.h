@@ -1,10 +1,13 @@
-#include "module.h"
+#ifndef ACTIVATION_H
+#define ACTIVATION_H
+
+#include "tensor.h"
 #include <algorithm>
 #include <cmath>
 #include <random>
 
 // save output for backward
-class ReLU : public Module {
+class ReLU {
 public:
     void forward(Tensor<float> &input, Tensor<float> &output) {
         output = input;
@@ -16,9 +19,9 @@ public:
     void backward(){};
 };
 
-class LeakyReLU : public Module {
+class LeakyReLU {
 private:
-    const float nagativeRate = 0.01;
+    float nagativeRate = 0.01;
 
 public:
     void forward(Tensor<float> &input, Tensor<float> &output) {
@@ -31,7 +34,7 @@ public:
     void backward(){};
 };
 
-class Sigmoid : public Module {
+class Sigmoid {
 public:
     void forward(Tensor<float> &input, Tensor<float> &output) {
         output = input;
@@ -44,7 +47,7 @@ public:
     void backward(){};
 };
 
-class Tanh : public Module {
+class Tanh {
 public:
     void forward(Tensor<float> &input, Tensor<float> &output) {
         output = input;
@@ -57,9 +60,9 @@ public:
     void backward(){};
 };
 
-class Softmax : public Module {
+class Softmax {
 private:
-    const int dim = 1;
+    int dim = 1;
 
 public:
     void forward(Tensor<float> &input, Tensor<float> &output) {
@@ -83,12 +86,12 @@ public:
     void backward(){};
 };
 
-class Dropout : public Module {
+class Dropout {
 private:
-    const float p;
+    float p;
 
 public:
-    Dropout(float p) : p(p) {}
+    Dropout(float p = 0.3) : p(p) {}
 
     void forward(Tensor<float> &input, Tensor<float> &output, bool training = false) {
         // should do nothing when not training
@@ -107,3 +110,5 @@ public:
     };
     void backward(){};
 };
+
+#endif

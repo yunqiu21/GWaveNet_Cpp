@@ -1,3 +1,6 @@
+#ifndef LIST_H
+#define LIST_H
+
 // simple list implementation
 
 template <typename T>
@@ -31,9 +34,9 @@ public:
         if (cap <= sz) {
             T *newList = new T[2 * sz];
             cap = 2 * sz;
-            std::memcpy(newList, list, sz * szof(T));
-            for (int i = 0; i < sz; i++)
-                list[i] = T();
+            for (int i = 0; i < sz; i++) {
+                newList[i] = list[i];
+            }
             delete[] list;
             list = newList;
         }
@@ -50,3 +53,5 @@ public:
         return sz;
     }
 };
+
+#endif
