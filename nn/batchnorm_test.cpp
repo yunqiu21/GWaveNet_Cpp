@@ -34,6 +34,7 @@ void test1() {
     expected.setData(expected_data);
     cout << "same as expected: " << expected.isSame(output) << endl;
 }
+
 void test2() {
     cout << "==== test 2 (1,2,2,2) ====" << endl;  
 
@@ -64,6 +65,7 @@ void test2() {
     expected.setData(expected_data);
     cout << "same as expected: " << expected.isSame(output) << endl;
 }
+
 void test3() {
     cout << "==== test 3 (2,2,3,5) ====" << endl;  
 
@@ -106,7 +108,7 @@ void test3() {
          6.0148,  8.2596,  0.0983, 10.6078,  7.4010,  0.8575,  5.3119,  4.5980,
          2.1181,  3.0039,  3.5741,  2.7856};
     expected.setData(expected_data);
-    cout << "same as expected: " << expected.isSame(output) << endl;
+    cout << "same as expected: " << expected.isSame(output, 1.5) << endl;
 }
 
 int main() {
