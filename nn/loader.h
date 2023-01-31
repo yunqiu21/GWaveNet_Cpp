@@ -1,3 +1,6 @@
+#ifndef LOADER_H
+#define LOADER_H
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -81,3 +84,5 @@ void Loader<T>::load() {
         }
     }
 };
+
+#endif

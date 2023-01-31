@@ -123,6 +123,7 @@ bool Tensor<T>::isSame(const Tensor &src) {
 
     for (int i = 0; i < dataCount; i++) {
         if (src.data[i] - data[i] >= 1e-4 || src.data[i] - data[i] <= -1e-4) {
+            cout << "Different value at " << i << " : " << src.data[i] << " vs " << data[i] << endl;
             return false;
         }
     }
