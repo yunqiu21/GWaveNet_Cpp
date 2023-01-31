@@ -7,7 +7,7 @@
 using namespace std;
 
 template <typename T>
-class Loader : Tensor<T> {
+class Loader : public Tensor<T> {
 protected:   
     string fileName;
     string itemName;
@@ -72,47 +72,57 @@ void Loader<T>::load() {
     std::ifstream value_file(fileName, std::ifstream::binary);
     value_file >> values;
 
-    dim = values[itemName]["shape"].size();
-    shape = new int[dim];
-    dataCount = 1;
-    for (int i = 0; i < dim; i++) {
+    this->dim = values[itemName]["shape"].size();
+    cout << this->dim << endl;
+    int *shape = new int[this->dim];
+    this->dataCount = 1;
+    for (int i = 0; i < this->dim; i++) {
         shape[i] = values[itemName]["shape"][i].asInt();
-        dataCount *= shape[i];
+        this->dataCount *= shape[i];
     }
+    this->shape = shape;
+    this->data = new T[this->dataCount];
     
     // data = new T[dataCount];
-    float *it = begin();
-    if (dim == 1) {       
+    float *it = this->begin();
+    if (this->dim == 1) {       
         // data = new T[shape[0]][shape[1]];
-        for (int k = 0; k < shape[0]; k++) {
-            for (int l = 0; l < shape[1]; l++) {
+        for (int k = 0; k < this->shape[0]; k++) {            
+            *it = values[itemName]["__ndarray__"][k].asFloat();
+            cout << *it << " ";
+            this->next(it);            
+        }       
+    } else if (this->dim == 2) {       
+        // data = new T[shape[0]][shape[1]];
+        for (int k = 0; k < this->shape[0]; k++) {
+            for (int l = 0; l < this->shape[1]; l++) {
                 *it = values[itemName]["__ndarray__"][k][l].asFloat();
-                cout << it << " ";
-                next(it);
+                cout << *it << " ";
+                this->next(it);
             }
         }
        
-    } else if (dim == 2) {
+    } else if (this->dim == 3) {
         // data = new T[shape[0]][shape[1]][shape[2]];
-        for (int j = 0; j < shape[0]; j++) {
-            for (int k = 0; k < shape[1]; k++) {
-                for (int l = 0; l < shape[2]; l++) {
+        for (int j = 0; j < this->shape[0]; j++) {
+            for (int k = 0; k < this->shape[1]; k++) {
+                for (int l = 0; l < this->shape[2]; l++) {
                     *it = values[itemName]["__ndarray__"][j][k][l].asFloat();
                     cout << *it << " ";
-                    next(it);
+                    this->next(it);
                 }
             }
         }
        
-    } else if (dim == 4) {
+    } else if (this->dim == 4) {
         // data = new T[shape[0]][shape[1]][shape[2]][shape[3]];
-        for (int i = 0; i < shape[0]; i++) {
-            for (int j = 0; j < shape[1]; j++) {
-                for (int k = 0; k < shape[2]; k++) {
-                    for (int l = 0; l < shape[3]; l++) {
+        for (int i = 0; i < this->shape[0]; i++) {
+            for (int j = 0; j < this->shape[1]; j++) {
+                for (int k = 0; k < this->shape[2]; k++) {
+                    for (int l = 0; l < this->shape[3]; l++) {
                         *it = values[itemName]["__ndarray__"][i][j][k][l].asFloat();
                         cout << *it << " ";
-                        next(it);
+                        this->next(it);
                     }
                 }
             }
