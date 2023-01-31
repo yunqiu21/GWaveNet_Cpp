@@ -36,9 +36,7 @@ void test_Loader() {
     cout << "same as expected: " << expected.isSame(loader) << endl;
 }
 
-
-
-
 int main() {
     test_Loader();
 }
+
