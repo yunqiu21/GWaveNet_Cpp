@@ -132,7 +132,7 @@ void test_Softmax() {
          0.0674, -1.0838,  0.2145, -1.2188, -1.2034,  2.4634,  0.7295, -0.8012,
         -0.0117,  1.2978, -0.3526, -1.5425, -0.7073,  1.3479, -1.0193,  0.2188,
          2.8235, -1.2821, -0.9532, -0.0842};
-    input.setData(softmax_input_data);
+    softmax_input.setData(softmax_input_data);
 
     Softmax softmax;
     Tensor<float> softmax_output;
