@@ -1,5 +1,11 @@
-#include "assert.h"
-#include <string.h>
+#ifndef TENSOR_H
+#define TENSOR_H
+
+#include <cassert>
+#include <cstring>
+#include <iostream>
+
+using namespace std;
 
 // Tensor
 template <typename T>
@@ -7,15 +13,27 @@ class Tensor {
 protected:
     T *data;
     int dataCount;
-    const int *shape;
+    int *shape;
     int dim;
+
+    void clear() {
+        if (data)
+            delete data;
+        data = nullptr;
+        if (shape)
+            delete shape;
+        shape = nullptr;
+        dim = 0;
+        dataCount = 0;
+    }
 
 public:
     Tensor();
     ~Tensor();
 
-    // copy constructor, use deep copy
-    Tensor operator=(const Tensor &t);
+    Tensor(const Tensor &);
+    // assignment op, use deep copy
+    Tensor &operator=(const Tensor &t);
     bool copyData(const Tensor &src);
 
     bool isSame(const Tensor &src);
@@ -43,6 +61,9 @@ public:
     const int *const getShape();
 
     void setData(T *d);
+
+    bool reshapeLastDim(int sz);
+    Tensor<T> operator+(Tensor<T> const &t);
 };
 
 template <typename T>
@@ -50,6 +71,7 @@ Tensor<T>::Tensor() {
     data = nullptr;
     shape = nullptr;
     dim = 0;
+    dataCount = 0;
 };
 
 template <typename T>
@@ -64,12 +86,21 @@ Tensor<T>::~Tensor() {
     }
 };
 
-// copy constructor, use deep copy
 template <typename T>
-Tensor<T> Tensor<T>::operator=(const Tensor<T> &t) {
-    Tensor newTensor;
-    newTensor.init(t.shape, t.dim);
-    memcpy(newTensor.data, t.data, t.dataCount * sizeof(T));
+Tensor<T>::Tensor(const Tensor &t) {
+    data = nullptr;
+    shape = nullptr;
+    init(t.shape, t.dim);
+    std::memcpy(data, t.data, t.dataCount * sizeof(T));
+}
+
+template <typename T>
+Tensor<T> &Tensor<T>::operator=(const Tensor<T> &t) {
+    if (this == &t)
+        return *this;
+    init(t.shape, t.dim);
+    std::memcpy(data, t.data, t.dataCount * sizeof(T));
+    return *this;
 };
 
 template <typename T>
@@ -85,13 +116,23 @@ bool Tensor<T>::copyData(const Tensor<T> &src) {
 template <typename T>
 bool Tensor<T>::isSame(const Tensor &src) {
     // check shape
-    return src.dim == dim &&
-           memcmp(src.shape, shape, dim * sizeof(T)) == 0 &&
-           memcmp(data, src.data, dataCount * sizeof(T)) == 0;
+    if (!(src.dim == dim &&
+        memcmp(src.shape, shape, dim * sizeof(T)) == 0)) {
+        return false;
+    }
+
+    for (int i = 0; i < dataCount; i++) {
+        if (src.data[i] - data[i] >= 1e-4 || src.data[i] - data[i] <= -1e-4) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 template <typename T>
 void Tensor<T>::init(const int *s, int d) {
+    clear();
     if (d == 0) {
         return;
     }
@@ -110,6 +151,7 @@ void Tensor<T>::init(const int *s, int d) {
 
 template <typename T>
 void Tensor<T>::init(int size) {
+    clear();
     dim = 1;
     shape = new int[1]{size};
     dataCount = size;
@@ -118,6 +160,7 @@ void Tensor<T>::init(int size) {
 
 template <typename T>
 void Tensor<T>::init(int row, int column) {
+    clear();
     dim = 2;
     shape = new int[2]{row, column};
     dataCount = row * column;
@@ -126,6 +169,7 @@ void Tensor<T>::init(int row, int column) {
 
 template <typename T>
 void Tensor<T>::init(int C, int H, int W) {
+    clear();
     dim = 3;
     shape = new int[3]{C, H, W};
     dataCount = C * H * W;
@@ -134,6 +178,7 @@ void Tensor<T>::init(int C, int H, int W) {
 
 template <typename T>
 void Tensor<T>::init(int N, int C, int H, int W) {
+    clear();
     dim = 4;
     shape = new int[4]{N, C, H, W};
     dataCount = N * C * H * W;
@@ -197,3 +242,53 @@ template <typename T>
 void Tensor<T>::setData(T *d) {
     memcpy(data, d, dataCount * sizeof(T));
 }
+
+template <typename T>
+bool Tensor<T>::reshapeLastDim(int sz) {
+    assert(dim == 4);
+    if (shape[3] < sz) {
+        return false;
+    }
+
+    int N = shape[0];
+    int C = shape[1];
+    int H = shape[2];
+    int W = shape[3];
+
+    dataCount /= W;
+    dataCount *= sz;
+    shape[3] = sz;
+    T *newData = new T[dataCount];
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < C; j++) {
+            for (int k = 0; k < H; k++) {
+                memcpy(newData + i * C * H * sz + j * H * sz + k * sz,
+                       data + i * C * H * W + j * H * W + k * W + W - sz, sz * sizeof(T));
+            }
+        }
+    }
+
+    delete[] data;
+    data = newData;
+
+    return true;
+}
+
+template <typename T>
+Tensor<T> Tensor<T>::operator+(Tensor<T> const &t) {
+    assert(t.dim == dim);
+
+    for (int i = 0; i < dim; i++) {
+        assert(shape[i] == t.shape[i]);
+    }
+
+    Tensor<T> result = t;
+    for (int i = 0; i < dataCount; i++) {
+        result.data[i] += data[i];
+    }
+
+    return result;
+}
+
+#endif

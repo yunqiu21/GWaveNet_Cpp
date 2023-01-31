@@ -1,13 +1,17 @@
+#ifndef GCN_H
+#define GCN_H
+
+#include "list.h"
 #include "nconv.h"
 #include "nn/activation.h"
 #include "nn/conv.h"
 
-class GCN : public Module {
+class GCN {
 private:
     NConv nconv;
-    const int c_in;
+    int c_in;
     Conv2d mlp;
-    const int order;
+    int order;
     Dropout dropout;
 
     void concat(Tensor<float> &x, Tensor<float> &out, int &cIdx) {
@@ -24,22 +28,25 @@ private:
     };
 
 public:
-    GCN(int c_in, int c_out, float dropout = 0.3, int support_len = 3, int order = 2)
-        : c_in((order * support_len + 1) * c_in), order(order), mlp(Conv2d(c_in, c_out, 1, 1)){};
+    GCN(){};
 
-    void forward(Tensor<float> &x, Tensor<float> *support, int supportSz, Tensor<float> &output) {
+    GCN(int c_in, int c_out, float dropout = 0.3, int support_len = 3, int order = 2)
+        : c_in((order * support_len + 1) * c_in), order(order), mlp(Conv2d(c_in, c_out, 1, 1)),
+          dropout(Dropout(dropout)){};
+
+    void forward(Tensor<float> &x, List<Tensor<float>> support, Tensor<float> &output) {
         Tensor<float> out;
-        out.init(x.getShape()[0], x.getShape()[1] * (1 + supportSz * order), x.getShape()[2], x.getShape()[3]);
+        out.init(x.getShape()[0], x.getShape()[1] * (1 + support.size() * order), x.getShape()[2], x.getShape()[3]);
 
         int cIdx = 0;
         concat(x, out, cIdx);
-        for (int i = 0; i < supportSz; i++) {
+        for (int i = 0; i < support.size(); i++) {
             Tensor<float> x1;
-            nconv.forward(x, support[i], x1);
+            nconv.forward(x, support(i), x1);
             concat(x1, out, cIdx);
             for (int j = 2; j < order + 1; j++) {
                 Tensor<float> x2;
-                nconv.forward(x1, support[i], x2);
+                nconv.forward(x1, support(i), x2);
                 concat(x2, out, cIdx);
                 x1 = x2;
             }
@@ -50,3 +57,5 @@ public:
         dropout.forward(out1, output);
     }
 };
+
+#endif

@@ -28,5 +28,15 @@ int main() {
     }
     cout << endl;
 
+    Tensor<int> t2;
+    t2 = t;
+    cout << "tensor 2 value: ";
+    val = t2.begin();
+    while (val) {
+        cout << *val << " ";
+        t2.next(val);
+    }
+    cout << endl;
+
     return 0;
 }
