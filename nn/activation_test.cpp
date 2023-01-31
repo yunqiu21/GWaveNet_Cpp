@@ -3,18 +3,7 @@
 
 using namespace std;
 
-Tensor<float> input;
-input.init(2, 2, 3, 5);
-float input_data[60]{
-    -0.0865,  0.0194, -0.7198, -1.3064,  0.4679, -0.5583, -0.5058, -1.2496,
-    -0.1417,  1.7925, -0.5095, -0.6528,  0.9676,  0.2013, -1.4495, -0.1064,
-    -1.7182, -1.0932,  1.2530,  0.2698, -1.4022, -0.5537,  2.0462,  0.2437,
-        1.2503, -1.7572,  0.5026,  1.6914, -0.3388,  0.6981, -0.7136,  0.6665,
-        0.6714,  0.7490,  0.4754,  0.0725, -1.0816,  1.3718, -0.6054,  1.2531,
-        0.2663, -0.7511, -0.8578, -0.6528, -0.0890, -0.8227, -0.8683, -0.5724,
-        0.1978,  1.0399, -2.0217,  1.9208,  0.7178, -1.7369, -0.0659, -0.3337,
-    -1.2640, -0.9317, -0.7178, -1.0136};
-input.setData(input_data);
+Tensor<float> input; /* input for all tests except softmax */
 
 void test_ReLU() {
     cout << "==== test ReLU ====" << endl;    
@@ -23,9 +12,9 @@ void test_ReLU() {
     Tensor<float> relu_output;
     relu.forward(input, relu_output);
 
-    int dim = relu_output.getDim();
-    cout << "relu_output dimension: " << dim << ", shape: ";
-    for (int i = 0; i < dim; i++) {
+    int relu_dim = relu_output.getDim();
+    cout << "relu_output dimension: " << relu_dim << ", shape: ";
+    for (int i = 0; i < relu_dim; i++) {
         cout << relu_output.getShape()[i] << " ";
     }
     cout << endl;
@@ -42,16 +31,18 @@ void test_ReLU() {
         0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000};
     relu_expected.setData(relu_expected_data);
     cout << "same as relu_expected: " << relu_expected.isSame(relu_output) << endl;
+}
 
+void test_LeakyReLU() {
     cout << "==== test LeakyReLU ====" << endl;    
 
     LeakyReLU leaky_relu;
     Tensor<float> leaky_relu_output;
     leaky_relu.forward(input, leaky_relu_output);
 
-    int dim = leaky_relu_output.getDim();
-    cout << "leaky_relu_output dimension: " << dim << ", shape: ";
-    for (int i = 0; i < dim; i++) {
+    int leaky_relu_dim = leaky_relu_output.getDim();
+    cout << "leaky_relu_output dimension: " << leaky_relu_dim << ", shape: ";
+    for (int i = 0; i < leaky_relu_dim; i++) {
         cout << leaky_relu_output.getShape()[i] << " ";
     }
     cout << endl;
@@ -73,16 +64,18 @@ void test_ReLU() {
         -3.3370e-03, -1.2640e-02, -9.3169e-03, -7.1777e-03, -1.0136e-02};
     leaky_relu_expected.setData(leaky_relu_expected_data);
     cout << "same as leaky_relu_expected: " << leaky_relu_expected.isSame(leaky_relu_output) << endl;
-    
+}
+
+void test_Sigmoid() {
     cout << "==== test Sigmoid ====" << endl;    
 
     Sigmoid sigmoid;
     Tensor<float> sigmoid_output;
     sigmoid.forward(input, sigmoid_output);
 
-    int dim = sigmoid_output.getDim();
-    cout << "sigmoid_output dimension: " << dim << ", shape: ";
-    for (int i = 0; i < dim; i++) {
+    int sigmoid_dim = sigmoid_output.getDim();
+    cout << "sigmoid_output dimension: " << sigmoid_dim << ", shape: ";
+    for (int i = 0; i < sigmoid_dim; i++) {
         cout << sigmoid_output.getShape()[i] << " ";
     }
     cout << endl;
@@ -101,6 +94,83 @@ void test_ReLU() {
     cout << "same as sigmoid_expected: " << sigmoid_expected.isSame(sigmoid_output) << endl;
 }
 
+void test_Tanh() {
+    cout << "==== test Tanh ====" << endl;    
+
+    Tanh tanh;
+    Tensor<float> tanh_output;
+    tanh.forward(input, tanh_output);
+
+    int tanh_dim = tanh_output.getDim();
+    cout << "tanh_output dimension: " << tanh_dim << ", shape: ";
+    for (int i = 0; i < tanh_dim; i++) {
+        cout << tanh_output.getShape()[i] << " ";
+    }
+    cout << endl;
+
+    Tensor<float> tanh_expected;
+    tanh_expected.init(2, 2, 3, 5);
+    float tanh_expected_data[60]{
+        -0.0863,  0.0194, -0.6168, -0.8634,  0.4365, -0.5067, -0.4667, -0.8482,
+        -0.1408,  0.9460, -0.4696, -0.5736,  0.7476,  0.1986, -0.8956, -0.1060,
+        -0.9376, -0.7980,  0.8491,  0.2634, -0.8858, -0.5033,  0.9672,  0.2390,
+         0.8484, -0.9422,  0.4642,  0.9343, -0.3264,  0.6032, -0.6129,  0.5827,
+         0.5859,  0.6346,  0.4426,  0.0724, -0.7938,  0.8791, -0.5409,  0.8492,
+         0.2602, -0.6358, -0.6951, -0.5736, -0.0888, -0.6765, -0.7005, -0.5171,
+         0.1953,  0.7778, -0.9655,  0.9580,  0.6155, -0.9399, -0.0658, -0.3218,
+        -0.8522, -0.7314, -0.6155, -0.7672};
+    tanh_expected.setData(tanh_expected_data);
+    cout << "same as tanh_expected: " << tanh_expected.isSame(tanh_output) << endl;
+}
+
+void test_Softmax() {
+    cout << "==== test Softmax ====" << endl;    
+
+    Tensor<float> softmax_input;
+    softmax_input.init(4, 5);
+    float softmax_input_data[20]{
+         0.0674, -1.0838,  0.2145, -1.2188, -1.2034,  2.4634,  0.7295, -0.8012,
+        -0.0117,  1.2978, -0.3526, -1.5425, -0.7073,  1.3479, -1.0193,  0.2188,
+         2.8235, -1.2821, -0.9532, -0.0842};
+    input.setData(softmax_input_data);
+
+    Softmax softmax;
+    Tensor<float> softmax_output;
+    softmax.forward(softmax_input, softmax_output);
+
+    int softmax_dim = softmax_output.getDim();
+    cout << "softmax_output dimension: " << softmax_dim << ", shape: ";
+    for (int i = 0; i < softmax_dim; i++) {
+        cout << softmax_output.getShape()[i] << " ";
+    }
+    cout << endl;
+
+    Tensor<float> softmax_expected;
+    softmax_expected.init(4, 5);
+    float softmax_expected_data[20]{
+        0.3299, 0.1043, 0.3821, 0.0911, 0.0926, 0.6208, 0.1096, 0.0237, 0.0522,
+        0.1935, 0.1251, 0.0381, 0.0877, 0.6850, 0.0642, 0.0633, 0.8562, 0.0141,
+        0.0196, 0.0468};
+    softmax_expected.setData(softmax_expected_data);
+    cout << "same as softmax_expected: " << softmax_expected.isSame(softmax_output) << endl;
+}
+
 int main() {
+    input.init(2, 2, 3, 5);
+    float input_data[60]{
+        -0.0865,  0.0194, -0.7198, -1.3064,  0.4679, -0.5583, -0.5058, -1.2496,
+        -0.1417,  1.7925, -0.5095, -0.6528,  0.9676,  0.2013, -1.4495, -0.1064,
+        -1.7182, -1.0932,  1.2530,  0.2698, -1.4022, -0.5537,  2.0462,  0.2437,
+         1.2503, -1.7572,  0.5026,  1.6914, -0.3388,  0.6981, -0.7136,  0.6665,
+         0.6714,  0.7490,  0.4754,  0.0725, -1.0816,  1.3718, -0.6054,  1.2531,
+         0.2663, -0.7511, -0.8578, -0.6528, -0.0890, -0.8227, -0.8683, -0.5724,
+         0.1978,  1.0399, -2.0217,  1.9208,  0.7178, -1.7369, -0.0659, -0.3337,
+        -1.2640, -0.9317, -0.7178, -1.0136};
+    input.setData(input_data);
+    
     test_ReLU();
+    test_LeakyReLU();
+    test_Sigmoid();
+    test_Tanh();
+    test_Softmax();
 }
