@@ -116,9 +116,18 @@ bool Tensor<T>::copyData(const Tensor<T> &src) {
 template <typename T>
 bool Tensor<T>::isSame(const Tensor &src) {
     // check shape
-    return src.dim == dim &&
-           memcmp(src.shape, shape, dim * sizeof(T)) == 0 &&
-           memcmp(data, src.data, dataCount * sizeof(T)) == 0;
+    if (!(src.dim == dim &&
+        memcmp(src.shape, shape, dim * sizeof(T)) == 0)) {
+        return false;
+    }
+
+    for (int i = 0; i < dataCount; i++) {
+        if (src.data[i] - data[i] >= 1e-4 || src.data[i] - data[i] <= -1e-4) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 template <typename T>
