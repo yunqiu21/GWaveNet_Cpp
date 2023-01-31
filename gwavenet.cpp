@@ -4,6 +4,7 @@
 #include "list.h"
 #include "module.h"
 #include "nn/conv.h"
+#include <cassert>
 
 class GWaveNet {
 private:
@@ -16,14 +17,20 @@ private:
     Conv2d start_conv;
 
     List<Conv2d> filter_convs;
+    List<Tanh> filter_activations;
+
     List<Conv2d> gate_convs;
+    List<Sigmoid> gate_activations;
+
     List<Conv2d> residual_convs;
     List<Conv2d> skip_convs;
     List<BatchNorm2D> bn;
     List<GCN> gconv;
 
     Conv2d end_conv1;
+    ReLU end_relu1;
     Conv2d end_conv2;
+    ReLU end_relu2;
 
     List<Tensor<float>> supports;
 
@@ -58,7 +65,9 @@ public:
             int new_dilation = 1;
             for (int l = 0; l < layers; l++) {
                 filter_convs.add(Conv2d(residual_channels, dilation_channels, 1, kernel_size, new_dilation));
+                filter_activations.add(Tanh());
                 gate_convs.add(Conv2d(residual_channels, dilation_channels, 1, kernel_size, new_dilation));
+                gate_activations.add(Sigmoid());
 
                 residual_convs.add(Conv2d(dilation_channels, residual_channels, 1, 1));
                 skip_convs.add(Conv2d(dilation_channels, skip_channels, 1, 1));
@@ -75,5 +84,65 @@ public:
         }
     };
 
-    void forward(Tensor<float> &input, Tensor<float> &output){};
+    void forward(Tensor<float> &input, Tensor<float> &output) {
+        assert(input.getDim() == 4 && input.getShape()[3] > receptive_field);
+
+        Tensor<float> x;
+        start_conv.forward(input, x);
+
+        Tensor<float> skip;
+
+        List<Tensor<float>> new_supports = supports;
+        if (gcn_bool && addaptadj && supports.size() > 0) {
+            Tensor<float> adp_out;
+            adp.forward(adp_out);
+            new_supports.add(adp_out);
+        }
+
+        for (int i = 0; i < blocks * layers; i++) {
+            Tensor<float> residual = x;
+
+            Tensor<float> filter_temp;
+            filter_convs(i).forward(residual, filter_temp);
+            Tensor<float> filter;
+            filter_activations(i).forward(filter_temp, filter);
+
+            Tensor<float> gate_temp;
+            gate_convs(i).forward(residual, gate_temp);
+            Tensor<float> gate;
+            gate_activations(i).forward(gate_temp, gate);
+
+            mul(filter, gate, x);
+
+            Tensor<float> s;
+            skip_convs(i).forward(x, s);
+
+            if (skip.reshapeLastDim(s.getShape()[3])) {
+                skip = skip + s;
+            } else {
+                skip = s;
+            }
+
+            Tensor<float> x1;
+            if (gcn_bool && supports.size() > 0) {
+                gconv(i).forward(x, supports, x1);
+            } else {
+                residual_convs(i).forward(x, x1);
+            }
+
+            residual.reshapeLastDim(x.getShape()[3]);
+            x1 = x1 + residual;
+
+            bn(i).forward(x1, x);
+        }
+
+        Tensor<float> skip_relu;
+        end_relu1.forward(skip, skip_relu);
+        Tensor<float> end1;
+        end_conv1.forward(skip_relu, end1);
+        Tensor<float> skip_relu2;
+        end_relu2.forward(end1, skip_relu2);
+        Tensor<float> end2;
+        end_conv1.forward(skip_relu2, output);
+    };
 };

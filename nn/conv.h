@@ -141,6 +141,8 @@ public:
     Conv2d(int in_channels, int out_channels, int kernel_h, int kernel_w,
            int dilation = 1, bool bias = true) : _ConvNd(in_channels, out_channels, kernel_h, kernel_w, dilation, bias) {}
 
+    ~Conv2d() = default;
+
     // input: [N][in_channels][H][W]
     // output: [N][out_channels][H-dilation(KernalH-1)][W-dilation(kernelW-1)]
     void forward(Tensor<float> &input, Tensor<float> &output) {

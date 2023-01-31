@@ -12,7 +12,7 @@ public:
         list = new T[cap];
     }
 
-    ~TList() {
+    ~List() {
         if (list) {
             delete[] list;
         }
