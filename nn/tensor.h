@@ -3,6 +3,9 @@
 
 #include <cassert>
 #include <cstring>
+#include <iostream>
+
+using namespace std;
 
 // Tensor
 template <typename T>
@@ -13,12 +16,24 @@ protected:
     int *shape;
     int dim;
 
+    void clear() {
+        if (data)
+            delete data;
+        data = nullptr;
+        if (shape)
+            delete shape;
+        shape = nullptr;
+        dim = 0;
+        dataCount = 0;
+    }
+
 public:
     Tensor();
     ~Tensor();
 
-    // copy constructor, use deep copy
-    Tensor operator=(const Tensor &t);
+    Tensor(const Tensor &);
+    // assignment op, use deep copy
+    Tensor &operator=(const Tensor &t);
     bool copyData(const Tensor &src);
 
     bool isSame(const Tensor &src);
@@ -56,6 +71,7 @@ Tensor<T>::Tensor() {
     data = nullptr;
     shape = nullptr;
     dim = 0;
+    dataCount = 0;
 };
 
 template <typename T>
@@ -71,11 +87,20 @@ Tensor<T>::~Tensor() {
 };
 
 template <typename T>
-Tensor<T> Tensor<T>::operator=(const Tensor<T> &t) {
-    Tensor newTensor;
-    newTensor.init(t.shape, t.dim);
-    std::memcpy(newTensor.data, t.data, t.dataCount * sizeof(T));
-    return newTensor;
+Tensor<T>::Tensor(const Tensor &t) {
+    data = nullptr;
+    shape = nullptr;
+    init(t.shape, t.dim);
+    std::memcpy(data, t.data, t.dataCount * sizeof(T));
+}
+
+template <typename T>
+Tensor<T> &Tensor<T>::operator=(const Tensor<T> &t) {
+    if (this == &t)
+        return *this;
+    init(t.shape, t.dim);
+    std::memcpy(data, t.data, t.dataCount * sizeof(T));
+    return *this;
 };
 
 template <typename T>
@@ -98,6 +123,7 @@ bool Tensor<T>::isSame(const Tensor &src) {
 
 template <typename T>
 void Tensor<T>::init(const int *s, int d) {
+    clear();
     if (d == 0) {
         return;
     }
@@ -116,6 +142,7 @@ void Tensor<T>::init(const int *s, int d) {
 
 template <typename T>
 void Tensor<T>::init(int size) {
+    clear();
     dim = 1;
     shape = new int[1]{size};
     dataCount = size;
@@ -124,6 +151,7 @@ void Tensor<T>::init(int size) {
 
 template <typename T>
 void Tensor<T>::init(int row, int column) {
+    clear();
     dim = 2;
     shape = new int[2]{row, column};
     dataCount = row * column;
@@ -132,6 +160,7 @@ void Tensor<T>::init(int row, int column) {
 
 template <typename T>
 void Tensor<T>::init(int C, int H, int W) {
+    clear();
     dim = 3;
     shape = new int[3]{C, H, W};
     dataCount = C * H * W;
@@ -140,6 +169,7 @@ void Tensor<T>::init(int C, int H, int W) {
 
 template <typename T>
 void Tensor<T>::init(int N, int C, int H, int W) {
+    clear();
     dim = 4;
     shape = new int[4]{N, C, H, W};
     dataCount = N * C * H * W;
