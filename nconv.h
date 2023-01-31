@@ -1,6 +1,9 @@
-#include "nn/module.h"
+#ifndef NCONV_H
+#define NCONV_H
 
-class NConv : public Module {
+#include "nn/tensor.h"
+
+class NConv {
 public:
     // TODO: use sparse matrix multiplication
     void forward(Tensor<float> &x, Tensor<float> &A, Tensor<float> &output) {
@@ -22,3 +25,5 @@ public:
         }
     };
 };
+
+#endif

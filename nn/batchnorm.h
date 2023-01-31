@@ -1,17 +1,21 @@
-#include "module.h"
+#ifndef BATCHNORM_H
+#define BATCHNORM_H
+
+#include "tensor.h"
 #include <algorithm>
 #include <cmath>
-#include <string.h>
+#include <cstring>
 
-class BatchNorm2D : public Module {
+class BatchNorm2D {
 private:
     Tensor<float> gamma; // shape (kernel_h * kernel_w)
     Tensor<float> beta;
-    const int channels;
-    const float eps = 0.00005;
-    const float momentum = 0.1;
+    int channels;
+    float eps = 0.00005;
+    float momentum = 0.1;
 
 public:
+    BatchNorm2D(){};
     BatchNorm2D(int channels) : channels(channels) {
         gamma.init(channels);
         beta.init(channels);
@@ -66,3 +70,5 @@ public:
 
     void backward(){};
 };
+
+#endif
