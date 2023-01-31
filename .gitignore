@@ -4,3 +4,9 @@
 #test files
 *_test
 
+# linker
+*.o
+
+# app
+gwavenet
+
