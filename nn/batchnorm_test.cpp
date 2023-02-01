@@ -14,8 +14,7 @@ void test1() {
     input.setData(input_data);
 
     BatchNorm2D bn;
-    bn.loadGamma("../data/test_data.json", "weight");
-    bn.loadBeta("../data/test_data.json", "bias");
+    bn.load("../data/test_data.json", "weight", "bias");
 
     Tensor<float> output;
     bn.forward(input, output);
@@ -45,8 +44,7 @@ void test2() {
     input.setData(input_data);
 
     BatchNorm2D bn;
-    bn.loadGamma("../data/test_data.json", "weight");
-    bn.loadBeta("../data/test_data.json", "bias");
+    bn.load("../data/test_data.json", "weight", "bias");
 
     Tensor<float> output;
     bn.forward(input, output);
@@ -83,8 +81,7 @@ void test3() {
     input.setData(input_data);
 
     BatchNorm2D bn;
-    bn.loadGamma("../data/test_data.json", "weight");
-    bn.loadBeta("../data/test_data.json", "bias");
+    bn.load("../data/test_data.json", "weight", "bias");
 
     Tensor<float> output;
     bn.forward(input, output);

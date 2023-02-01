@@ -7,14 +7,15 @@ void test_Loader() {
     cout << "==== test Loader ====" << endl;  
 
     Loader<float> loader;
+    Tensor<float> output;
     loader.setFileName("../data/metr_epoch_33_2.8.json");
     loader.setItemName("filter_convs.1.bias");
-    loader.load();  
+    loader.load(output);  
 
-    int dim = loader.getDim();
-    cout << "loader dimension: " << dim << ", shape: ";
+    int dim = output.getDim();
+    cout << "output dimension: " << dim << ", shape: ";
     for (int i = 0; i < dim; i++) {
-        cout << loader.getShape()[i] << " ";
+        cout << output.getShape()[i] << " ";
     }
     cout << endl;
 
@@ -33,7 +34,7 @@ void test_Loader() {
         -0.2672024965286255, 0.02411043830215931, -0.11112712323665619,
         -0.027019299566745758, -0.0050720395520329475};
     expected.setData(expected_data);
-    cout << "same as expected: " << expected.isSame(loader) << endl;
+    cout << "same as expected: " << expected.isSame(output) << endl;
 }
 
 int main() {
