@@ -51,12 +51,9 @@ public:
     void forward(Tensor<float> &output) {
         Tensor<float> out1;
         matmul2D(nodevec1, nodevec2, out1);
-        cout << "Finished MatMul." << endl;
         Tensor<float> out2;
         relu.forward(out1, out2);
-        cout << "Finished ReLU." << endl;
         softmax.forward(out2, output);
-        cout << "Finished Softmax." << endl;
     }
 };
 

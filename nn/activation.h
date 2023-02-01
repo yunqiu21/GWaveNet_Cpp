@@ -14,6 +14,7 @@ public:
         float *it = output.begin();
         while (it) {
             *it = std::max(*it, 0.f);
+            output.next(it);
         }
     };
     void backward(){};
@@ -29,6 +30,7 @@ public:
         float *it = output.begin();
         while (it) {
             *it = std::max(*it, 0.f) + nagativeRate * std::min(*it, 0.f);
+            output.next(it);
         }
     };
     void backward(){};
@@ -41,7 +43,7 @@ public:
         float *it = output.begin();
         while (it) {
             *it = 1 / (1 + std::exp(-*it));
-            ;
+            output.next(it);
         }
     };
     void backward(){};
@@ -54,7 +56,7 @@ public:
         float *it = output.begin();
         while (it) {
             *it = std::tanh(*it);
-            ;
+            output.next(it);
         }
     };
     void backward(){};

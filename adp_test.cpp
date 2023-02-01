@@ -14,7 +14,6 @@ void test_adp() {
     adp.load("data/test_data.json", "nodevec1", "nodevec2");
     /* run adp forward */
     Tensor<float> output;
-    cout << "Start calculating Adp." << endl;
     adp.forward(output);
     /* check output dimension */
     int dim = output.getDim();
