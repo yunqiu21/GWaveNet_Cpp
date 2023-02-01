@@ -37,24 +37,12 @@ public:
         gamma.setFileName(fileName);
         gamma.setItemName(itemName);
         gamma.load();
-        int gamma_dim = gamma.getDim();
-        cout << "gamma dimension: " << gamma_dim << ", shape: ";
-        for (int i = 0; i < gamma_dim; i++) {
-            cout << gamma.getShape()[i] << " ";
-        }
-        cout << endl;
     }
 
     void loadBeta(string fileName, string itemName) {
         beta.setFileName(fileName);
         beta.setItemName(itemName);
         beta.load();
-        int beta_dim = beta.getDim();
-        cout << "beta dimension: " << beta_dim << ", shape: ";
-        for (int i = 0; i < beta_dim; i++) {
-            cout << beta.getShape()[i] << " ";
-        }
-        cout << endl;
     }
 
     void forward(Tensor<float> &input, Tensor<float> &output) {
@@ -67,29 +55,31 @@ public:
         int H = input.getShape()[2];
         int W = input.getShape()[3];
 
-        for (int n = 0; n < N; n++) {
-            for (int c = 0; c < C; c++) {
-                /* get mean */
-                float sum = 0;
+        for (int c = 0; c < C; c++) {
+            /* get mean */
+            float sum = 0;
+            for (int n = 0; n < N; n++) {
                 for (int h = 0; h < H; h++) {
                     for (int w = 0; w < W; w++) {
                         sum += input(n, c, h, w);
                     }
                 }
-                float mean = sum / (H * W);
-                cout << "Mean: " << mean << endl;
+            }
+            float mean = sum / (N * H * W);
 
-                /* get variance */
-                sum = 0;
+            /* get variance */
+            sum = 0;
+            for (int n = 0; n < N; n++) {
                 for (int h = 0; h < H; h++) {
                     for (int w = 0; w < W; w++) {
                         sum += pow(input(n, c, h, w) - mean, 2);
                     }
                 }
-                cout << "sum: " << sum << endl;
-                float variance = sum / (H * W);
-                cout << "Var:  " << variance << endl;
-                /* set output */
+            }
+
+            float variance = sum / (N * H * W);
+            /* set output */
+            for (int n = 0; n < N; n++) {
                 for (int h = 0; h < H; h++) {
                     for (int w = 0; w < W; w++) {
                         output(n, c, h, w) = (output(n, c, h, w) - mean) / sqrt(variance + eps) * gamma(c) + beta(c);
