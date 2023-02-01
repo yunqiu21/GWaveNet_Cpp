@@ -108,7 +108,7 @@ void test3() {
          6.0148,  8.2596,  0.0983, 10.6078,  7.4010,  0.8575,  5.3119,  4.5980,
          2.1181,  3.0039,  3.5741,  2.7856};
     expected.setData(expected_data);
-    cout << "same as expected: " << expected.isSame(output, 0.1) << endl;
+    cout << "same as expected: " << expected.isSame(output) << endl;
 }
 
 int main() {
