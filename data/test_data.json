@@ -1,0 +1,9 @@
+{
+    "weight": {
+        "__ndarray__": [2.0,3.0],
+        "dtype": "float32", "shape": [2]
+    }, "bias": {
+        "__ndarray__": [4.0,5.0],
+        "dtype": "float32", "shape": [2]
+    }
+}
