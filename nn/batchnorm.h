@@ -13,8 +13,8 @@ using namespace std;
 
 class BatchNorm2D {
 private:
-    Loader<float> gamma; // shape (kernel_h * kernel_w)
-    Loader<float> beta;
+    Tensor<float> gamma; // shape (kernel_h * kernel_w)
+    Tensor<float> beta;
     int channels;
     float eps = 0.00005;
     float momentum = 0.1;
@@ -33,16 +33,13 @@ public:
         beta.setData(array);
     };
 
-    void loadGamma(string fileName, string itemName) {
-        gamma.setFileName(fileName);
-        gamma.setItemName(itemName);
-        gamma.load();
-    }
-
-    void loadBeta(string fileName, string itemName) {
-        beta.setFileName(fileName);
-        beta.setItemName(itemName);
-        beta.load();
+    void load(string fileName, string gammaName, string betaName) {
+        Loader<float> loader;
+        loader.setFileName(fileName);
+        loader.setItemName(gammaName);
+        loader.load(gamma);
+        loader.setItemName(betaName);
+        loader.load(beta);
     }
 
     void forward(Tensor<float> &input, Tensor<float> &output) {
