@@ -1,11 +1,9 @@
 #ifndef LOADER_H
 #define LOADER_H
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <string>
-#include <json/json.h>
-#include "tensor.h"
 
 using namespace std;
 
