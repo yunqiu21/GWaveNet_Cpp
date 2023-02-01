@@ -36,7 +36,7 @@ public:
     Tensor &operator=(const Tensor &t);
     bool copyData(const Tensor &src);
 
-    bool isSame(const Tensor &src);
+    bool isSame(const Tensor &src, float tolerance = 1e-4);
 
     // initializaiton
     void init(const int *s, int d);
@@ -114,7 +114,7 @@ bool Tensor<T>::copyData(const Tensor<T> &src) {
 }
 
 template <typename T>
-bool Tensor<T>::isSame(const Tensor &src) {
+bool Tensor<T>::isSame(const Tensor &src, float tolerance) {
     // check shape
     if (!(src.dim == dim &&
         memcmp(src.shape, shape, dim * sizeof(T)) == 0)) {
@@ -122,7 +122,8 @@ bool Tensor<T>::isSame(const Tensor &src) {
     }
 
     for (int i = 0; i < dataCount; i++) {
-        if (src.data[i] - data[i] >= 1e-4 || src.data[i] - data[i] <= -1e-4) {
+        if (src.data[i] - data[i] >= tolerance || src.data[i] - data[i] <= -tolerance) {
+            cout << "Different value at " << i << " : " << src.data[i] << " vs " << data[i] << endl;
             return false;
         }
     }

@@ -1,5 +1,6 @@
-#include "../utils/json/json.h"
-#include "tensor.h"
+#ifndef LOADER_H
+#define LOADER_H
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -7,13 +8,13 @@
 using namespace std;
 
 template <typename T>
-class Loader : public Tensor<T> {
-protected:
+class Loader {
+protected:   
     string fileName;
     string itemName;
 
 public:
-    void load();
+    void load(Tensor<T>& output);
     /* set names */
     void setFileName(string s);
     void setItemName(string s);
@@ -30,54 +31,51 @@ void Loader<T>::setItemName(string s) {
 };
 
 template <typename T>
-void Loader<T>::load() {
+void Loader<T>::load(Tensor<T>& output) {   
     Json::Value values;
     std::ifstream value_file(fileName, std::ifstream::binary);
     value_file >> values;
 
-    this->dim = values[itemName]["shape"].size();
-    int *shape = new int[this->dim];
-    this->dataCount = 1;
-    for (int i = 0; i < this->dim; i++) {
+    int dim = values[itemName]["shape"].size();
+    int *shape = new int[dim];
+    for (int i = 0; i < dim; i++) {
         shape[i] = values[itemName]["shape"][i].asInt();
-        this->dataCount *= shape[i];
     }
-    this->shape = shape;
-    this->data = new T[this->dataCount];
-
-    float *it = this->begin();
-    if (this->dim == 1) {
-        for (int k = 0; k < this->shape[0]; k++) {
+    output.init(shape, dim);   
+    float *it = output.begin();
+    if (dim == 1) {       
+        for (int k = 0; k < shape[0]; k++) {            
             *it = values[itemName]["__ndarray__"][k].asFloat();
-            this->next(it);
-        }
-    } else if (this->dim == 2) {
-        for (int k = 0; k < this->shape[0]; k++) {
-            for (int l = 0; l < this->shape[1]; l++) {
+            output.next(it);            
+        }       
+    } else if (dim == 2) {       
+        for (int k = 0; k < shape[0]; k++) {
+            for (int l = 0; l < shape[1]; l++) {
                 *it = values[itemName]["__ndarray__"][k][l].asFloat();
-                this->next(it);
+                output.next(it);
             }
-        }
-
-    } else if (this->dim == 3) {
-        for (int j = 0; j < this->shape[0]; j++) {
-            for (int k = 0; k < this->shape[1]; k++) {
-                for (int l = 0; l < this->shape[2]; l++) {
+        }       
+    } else if (dim == 3) {
+        for (int j = 0; j < shape[0]; j++) {
+            for (int k = 0; k < shape[1]; k++) {
+                for (int l = 0; l < shape[2]; l++) {
                     *it = values[itemName]["__ndarray__"][j][k][l].asFloat();
-                    this->next(it);
+                    output.next(it);
                 }
             }
-        }
-    } else if (this->dim == 4) {
-        for (int i = 0; i < this->shape[0]; i++) {
-            for (int j = 0; j < this->shape[1]; j++) {
-                for (int k = 0; k < this->shape[2]; k++) {
-                    for (int l = 0; l < this->shape[3]; l++) {
+        }       
+    } else if (dim == 4) {
+        for (int i = 0; i < shape[0]; i++) {
+            for (int j = 0; j < shape[1]; j++) {
+                for (int k = 0; k < shape[2]; k++) {
+                    for (int l = 0; l < shape[3]; l++) {
                         *it = values[itemName]["__ndarray__"][i][j][k][l].asFloat();
-                        this->next(it);
+                        output.next(it);
                     }
                 }
             }
         }
     }
 };
+
+#endif

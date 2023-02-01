@@ -13,8 +13,14 @@ loader_test.o: loader_test.cpp loader.h tensor.h ../utils/json/json.h
 jsoncpp.o: ../utils/jsoncpp.cpp ../utils/json/json.h ../utils/json/json-forwards.h
 	g++ -std=c++14 -c ../utils/jsoncpp.cpp
 
-activation_test: activation_test.cpp activation.h module.h tensor.h
+batchnorm_test: batchnorm_test.cpp batchnorm.h loader.h tensor.h
+	g++ -std=c++14 batchnorm_test.cpp -o batchnorm_test -ljsoncpp
+
+activation_test: activation_test.cpp activation.h tensor.h
 	g++ -std=c++14 activation_test.cpp -o activation_test
+
+matmul_test: matmul_test.cpp matmul.h tensor.h
+	g++ -std=c++14 matmul_test.cpp -o matmul_test
 
 clean: 
 	rm *_test *.o

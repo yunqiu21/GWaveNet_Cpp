@@ -18,7 +18,7 @@ void mul(Tensor<float> &t1, Tensor<float> &t2, Tensor<float> &output) {
     }
 }
 
-// element wise multiplication 2D
+// matrix multiplication 2D
 void matmul2D(Tensor<float> &t1, Tensor<float> &t2, Tensor<float> &output) {
     assert(t1.getDim() == 2 && t2.getDim() == 2 && t1.getShape()[1] == t2.getShape()[0]);
     const int M = t1.getShape()[0];
