@@ -45,5 +45,13 @@
     }, "conv.bias": {
         "__ndarray__": [1, 2],
         "dtype": "float32", "shape": [2]
-    }
+    }, "gconv.mlp.mlp.weight": {
+      "__ndarray__":
+      [[[[2.0]],[[2.0]],[[2.0]],[[2.0]],[[2.0]],[[2.0]],[[2.0]],
+        [[2.0]],[[2.0]],[[2.0]],[[2.0]],[[2.0]],[[2.0]],[[2.0]]]],
+      "dtype": "float32", "shape": [1, 14, 1, 1], "Corder": true
+    }, "gconv.mlp.mlp.bias": {
+      "__ndarray__": [2.0],
+      "dtype": "float32", "shape": [1], "Corder": true
+  }
 }

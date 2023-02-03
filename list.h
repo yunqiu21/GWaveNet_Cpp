@@ -1,6 +1,8 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <cassert>
+
 // simple list implementation
 
 template <typename T>
@@ -20,6 +22,8 @@ public:
             delete[] list;
         }
     }
+
+    List(const List &) = delete;
 
     List &operator=(const List &l) {
         List newList(cap);

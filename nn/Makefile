@@ -14,7 +14,7 @@ jsoncpp.o: ../utils/jsoncpp.cpp ../utils/json/json.h ../utils/json/json-forwards
 	g++ -std=c++14 -c ../utils/jsoncpp.cpp
 
 batchnorm_test: batchnorm_test.cpp batchnorm.h loader.h tensor.h
-	g++ -std=c++14 batchnorm_test.cpp -o batchnorm_test -ljsoncpp
+	g++ -std=c++14 batchnorm_test.cpp jsoncpp.o -o batchnorm_test
 
 activation_test: activation_test.cpp activation.h tensor.h
 	g++ -std=c++14 activation_test.cpp -o activation_test

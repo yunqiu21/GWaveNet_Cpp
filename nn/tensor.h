@@ -57,8 +57,8 @@ public:
     void next(T *&cur);
 
     // getters
-    int getDim();
-    const int *const getShape();
+    int getDim() const;
+    const int *const getShape() const;
 
     void setData(T *d);
 
@@ -192,12 +192,12 @@ bool Tensor<T>::isInit() {
 }
 
 template <typename T>
-int Tensor<T>::getDim() {
+int Tensor<T>::getDim() const {
     return dim;
 }
 
 template <typename T>
-const int *const Tensor<T>::getShape() {
+const int *const Tensor<T>::getShape() const {
     return shape;
 }
 

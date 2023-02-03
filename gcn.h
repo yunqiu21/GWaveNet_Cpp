@@ -5,12 +5,18 @@
 #include "nconv.h"
 #include "nn/activation.h"
 #include "nn/conv.h"
+#include "nn/loader.h"
+#include <iostream>
+
+using namespace std;
 
 class GCN {
 private:
     NConv nconv;
     int c_in;
     Conv2d mlp;
+    Tensor<float> mlp_weight;
+    Tensor<float> mlp_bias;
     int order;
     Dropout dropout;
 
@@ -31,10 +37,19 @@ public:
     GCN(){};
 
     GCN(int c_in, int c_out, float dropout = 0.3, int support_len = 3, int order = 2)
-        : c_in((order * support_len + 1) * c_in), order(order), mlp(Conv2d(c_in, c_out, 1, 1)),
+        : c_in((order * support_len + 1) * c_in), order(order), mlp(Conv2d(this->c_in, c_out, 1, 1)),
           dropout(Dropout(dropout)){};
 
-    void forward(Tensor<float> &x, List<Tensor<float>> support, Tensor<float> &output) {
+    void load(string fileName, string weightName, string biasName) {
+        Loader<float> loader;
+        loader.setFileName(fileName);
+        loader.setItemName(weightName);
+        loader.load(mlp_weight);
+        loader.setItemName(biasName);
+        loader.load(mlp_bias);
+    }
+
+    void forward(Tensor<float> &x, List<Tensor<float>> &support, Tensor<float> &output) {
         Tensor<float> out;
         out.init(x.getShape()[0], x.getShape()[1] * (1 + support.size() * order), x.getShape()[2], x.getShape()[3]);
 
@@ -50,6 +65,11 @@ public:
                 concat(x2, out, cIdx);
                 x1 = x2;
             }
+        }
+
+        if (mlp_weight.isInit() && mlp_bias.isInit()) {
+            mlp.setWeight(mlp_weight);
+            mlp.setBias(mlp_bias);
         }
 
         Tensor<float> out1;
