@@ -173,8 +173,45 @@ void test3() {
     cout << "same as expected: " << expected.isSame(output) << endl;
 }
 
+void test4() {
+    cout << "==== test4 ====" << endl;
+    Tensor<float> input;
+    input.init(2, 3, 4, 5);
+
+    /* init input */
+    int count = 1;
+    float *i = input.begin();
+    while (i) {
+        *i = count;
+        input.next(i);
+        count++;
+    }
+
+    Conv2d conv = Conv2d(3, 2, 2, 2, 2, true);
+    conv.load("../data/test_data.json", "conv.weight", "conv.bias");
+
+    Tensor<float> output;
+    conv.forward(input, output);
+
+    int dim = output.getDim();
+    cout << "output dimension: " << dim << ", shape: ";
+    for (int i = 0; i < dim; i++) {
+        cout << output.getShape()[i] << " ";
+    }
+    cout << endl;
+
+    Tensor<float> expected;
+    expected.init(2, 2, 2, 3);
+    float data[24]{2813, 2891, 2969, 3203, 3281, 3359, 6702, 6924, 7146,
+                   7812, 8034, 8256, 7493, 7571, 7649, 7883, 7961, 8039,
+                   20022, 20244, 20466, 21132, 21354, 21576};
+    expected.setData(data);
+    cout << "same as expected: " << expected.isSame(output) << endl;
+}
+
 int main() {
     test1();
     test2();
     test3();
+    test4();
 }
