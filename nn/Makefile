@@ -1,8 +1,8 @@
 tensor_test: tensor_test.cpp tensor.h
 	g++ -std=c++14 tensor_test.cpp -o tensor_test
 
-conv_test: conv_test.cpp tensor.h
-	g++ -std=c++14 conv_test.cpp -o conv_test
+conv_test: conv_test.cpp conv.h tensor.h
+	g++ -std=c++14 conv_test.cpp jsoncpp.o -o conv_test
 
 loader_test: loader_test.o jsoncpp.o loader.h tensor.h
 	g++ -std=c++14 -o loader_test loader_test.o jsoncpp.o

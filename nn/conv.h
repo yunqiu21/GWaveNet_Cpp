@@ -6,11 +6,13 @@
 //   https://github.com/pytorch/pytorch/blob/08891b0a4e08e2c642deac2042a02238a4d34c67/torch/nn/modules/conv.py
 
 #include "tensor.h"
+#include "loader.h"
 #include <cassert>
 #include <cmath>
 #include <cstring>
 #include <iostream>
 #include <random>
+#include <string>
 
 using namespace std;
 
@@ -68,6 +70,15 @@ public:
         }
         reset_parameters();
     };
+
+    void load(string fileName, string weightName, string biasName) {
+        Loader<float> loader;
+        loader.setFileName(fileName);
+        loader.setItemName(weightName);
+        loader.load(weight);
+        loader.setItemName(biasName);
+        loader.load(bias);
+    }
 
     const int getOutChannels() const {
         return out_channels;

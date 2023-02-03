@@ -4,7 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-
+#include "tensor.h"
+#include "../utils/json/json.h"
 using namespace std;
 
 template <typename T>
