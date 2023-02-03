@@ -15,8 +15,6 @@ private:
     NConv nconv;
     int c_in;
     Conv2d mlp;
-    Tensor<float> mlp_weight;
-    Tensor<float> mlp_bias;
     int order;
     Dropout dropout;
 
@@ -41,12 +39,7 @@ public:
           dropout(Dropout(dropout)){};
 
     void load(string fileName, string weightName, string biasName) {
-        Loader<float> loader;
-        loader.setFileName(fileName);
-        loader.setItemName(weightName);
-        loader.load(mlp_weight);
-        loader.setItemName(biasName);
-        loader.load(mlp_bias);
+        mlp.load(fileName, weightName, biasName);
     }
 
     void forward(Tensor<float> &x, List<Tensor<float>> &support, Tensor<float> &output) {
@@ -65,11 +58,6 @@ public:
                 concat(x2, out, cIdx);
                 x1 = x2;
             }
-        }
-
-        if (mlp_weight.isInit() && mlp_bias.isInit()) {
-            mlp.setWeight(mlp_weight);
-            mlp.setBias(mlp_bias);
         }
 
         Tensor<float> out1;
