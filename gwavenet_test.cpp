@@ -10,37 +10,46 @@ using namespace std;
 
 void test_gwavenet() {
     cout << "==== test gwavenet ====" << endl;
-    /* set timer */
-    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
     /* declare gwavenet class */
     GWaveNet gwavenet(207);
-    /* load nodevec1, nodevec2 */
+    /* load gwavenet parameters */
     cout << "begin loading" << endl;
+    chrono::steady_clock::time_point load_begin = chrono::steady_clock::now();
     gwavenet.load("data/metr_exp1_best_2.73.json");
-    chrono::steady_clock::time_point loaded = chrono::steady_clock::now();
-    cout << "Loading finished in " << (chrono::duration_cast<chrono::nanoseconds>(loaded - begin).count()) * 1e-9 << " seconds." << endl;
-    // /* run gwavenet forward */
-    // Tensor<float> output;
-    // gwavenet.forward(output);
-    // chrono::steady_clock::time_point end = chrono::steady_clock::now();
-    // cout << "Inference finished in " << (chrono::duration_cast<chrono::nanoseconds> (end - loaded).count()) * 1e-9 << " seconds." << endl;
-    // /* check output dimension */
-    // int dim = output.getDim();
-    // cout << "output dimension: " << dim << ", shape: ";
-    // for (int i = 0; i < dim; i++) {
-    //     cout << output.getShape()[i] << " ";
-    // }
-    // cout << endl;
-    // /* compare with expected */
-    // Tensor<float> expected;
-    // expected.init(6, 6);
-    // float expected_data[36]{
-    //     0.0029, 0.0454, 0.0042, 0.0311, 0.0029, 0.9136, 0.2705, 0.0053, 0.2836,
-    //     0.0055, 0.4128, 0.0224, 0.0806, 0.0806, 0.5969, 0.0806, 0.0806, 0.0806,
-    //     0.0327, 0.3577, 0.0327, 0.0374, 0.0327, 0.5069, 0.0252, 0.0252, 0.8103,
-    //     0.0466, 0.0676, 0.0252, 0.0575, 0.1117, 0.5206, 0.0575, 0.1337, 0.1189};
-    // expected.setData(expected_data);
-    // cout << "same as expected: " << expected.isSame(output) << endl;
+    chrono::steady_clock::time_point load_end = chrono::steady_clock::now();
+    cout << "Load parameters finished in " << (chrono::duration_cast<chrono::nanoseconds>(load_end - load_begin).count()) * 1e-9 << " seconds." << endl;
+    /* load input */
+    Loader<float> loader;
+    Tensor<float> input;
+    loader.setFileName("data/input.json");
+    loader.setItemName("testx");
+    loader.load(input);  
+    /* check input dimension */
+    int in_dim = input.getDim();
+    cout << "input dimension: " << in_dim << ", shape: ";
+    for (int i = 0; i < in_dim; i++) {
+        cout << input.getShape()[i] << " ";
+    }
+    cout << endl;
+    /* run gwavenet forward */
+    Tensor<float> output;
+    chrono::steady_clock::time_point forward_begin = chrono::steady_clock::now();
+    gwavenet.forward(input, output);
+    chrono::steady_clock::time_point forward_end = chrono::steady_clock::now();
+    cout << "Inference finished in " << (chrono::duration_cast<chrono::nanoseconds> (forward_end - forward_begin).count()) * 1e-9 << " seconds." << endl;
+    /* check output dimension */
+    int dim = output.getDim();
+    cout << "output dimension: " << dim << ", shape: ";
+    for (int i = 0; i < dim; i++) {
+        cout << output.getShape()[i] << " ";
+    }
+    cout << endl;
+    /* compare with expected */
+    Tensor<float> expected;
+    loader.setFileName("data/expected.json");
+    loader.setItemName("preds");
+    loader.load(expected);
+    cout << "same as expected: " << expected.isSame(output, 0.1) << endl;
 }
 
 int main() {

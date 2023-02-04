@@ -52,6 +52,7 @@ public:
           adp(Adp(num_nodes)),
           end_conv1(Conv2d(skip_channels, end_channels, 1, 1)),
           end_conv2(Conv2d(end_channels, out_dim, 1, 1)) {
+        
         int receptive_field = 1;
 
         if (gcn_bool && addaptadj) {
@@ -81,60 +82,57 @@ public:
                 if (gcn_bool)
                     gconv.add(GCN(dilation_channels, residual_channels, dropout, supports.size() + int(haveAdp)));
             }
+
+            this->receptive_field = receptive_field;
         }
     };
 
     void load(string fileName) {
-        // Conv2d start_conv;
-        cout << "Loading Conv2d start_conv" << endl;
         start_conv.load(fileName, "start_conv.weight", "start_conv.bias");
-        // List<Conv2d> filter_convs;
-        cout << "Loading List<Conv2d> filter_convs" << endl;
         for (int i = 0; i < filter_convs.size(); i++) {
-            filter_convs(i).load(fileName, "filter_convs."+ to_string(i) +".weight", "filter_convs."+ to_string(i) +".bias");
+            filter_convs(i).load(fileName,
+                                 "filter_convs."+ to_string(i) +".weight",
+                                 "filter_convs."+ to_string(i) +".bias");
         }
-        // List<Conv2d> gate_convs;
-        cout << "Loading List<Conv2d> gate_convs" << endl;
         for (int i = 0; i < gate_convs.size(); i++) {
-            gate_convs(i).load(fileName, "gate_convs."+ to_string(i) +".weight", "gate_convs."+ to_string(i) +".bias");
+            gate_convs(i).load(fileName,
+                               "gate_convs."+ to_string(i) +".weight",
+                               "gate_convs."+ to_string(i) +".bias");
         }
-        // List<Conv2d> residual_convs;
-        cout << "Loading List<Conv2d> residual_convs" << endl;
         for (int i = 0; i < residual_convs.size(); i++) {
-            residual_convs(i).load(fileName, "residual_convs."+ to_string(i) +".weight", "residual_convs."+ to_string(i) +".bias");
+            residual_convs(i).load(fileName,
+                                   "residual_convs."+ to_string(i) +".weight",
+                                   "residual_convs."+ to_string(i) +".bias");
         }
-        // List<Conv2d> skip_convs;
-        cout << "Loading List<Conv2d> skip_convs" << endl;
         for (int i = 0; i < skip_convs.size(); i++) {
-            skip_convs(i).load(fileName, "skip_convs."+ to_string(i) +".weight", "skip_convs."+ to_string(i) +".bias");
+            skip_convs(i).load(fileName,
+                               "skip_convs."+ to_string(i) +".weight",
+                               "skip_convs."+ to_string(i) +".bias");
         }
-        // List<BatchNorm2D> bn;
-        cout << "Loading List<BatchNorm2D> bn" << endl;
         for (int i = 0; i < bn.size(); i++) {
-            bn(i).load(fileName, "bn."+ to_string(i) +".weight", "bn."+ to_string(i) +".bias");
+            bn(i).load(fileName,
+                       "bn."+ to_string(i) +".weight",
+                       "bn."+ to_string(i) +".bias");
         }
-        // List<GCN> gconv;
-        cout << "Loading List<GCN> gconv" << endl;
         for (int i = 0; i < gconv.size(); i++) {
-            gconv(i).load(fileName, "gconv."+ to_string(i) +".weight", "gconv."+ to_string(i) +".mlp.mlp.bias");
+            gconv(i).load(fileName,
+                          "gconv."+ to_string(i) +".weight",
+                          "gconv."+ to_string(i) +".mlp.mlp.bias");
         }
-        // Conv2d end_conv1;
-        cout << "Loading Conv2d end_conv1" << endl;
         end_conv1.load(fileName, "end_conv_1.weight", "end_conv_1.bias");
-        // Conv2d end_conv2;
-        cout << "Loading Conv2d end_conv2" << endl;
         end_conv2.load(fileName, "end_conv_2.weight", "end_conv_2.bias");
-        // Adp adp;
-        cout << "Loading Adp adp" << endl;
         adp.load(fileName, "nodevec1", "nodevec2");
     }
 
     void forward(Tensor<float> &input, Tensor<float> &output) {
-        assert(input.getDim() == 4 && input.getShape()[3] > receptive_field);
+        assert(input.getDim() == 4);
+
+        if (input.getShape()[3] < receptive_field) {
+            input.padLastDim(receptive_field);
+        }
 
         Tensor<float> x;
         start_conv.forward(input, x);
-
         Tensor<float> skip;
 
         List<Tensor<float>> new_supports = supports;
@@ -161,16 +159,15 @@ public:
 
             Tensor<float> s;
             skip_convs(i).forward(x, s);
-
-            if (skip.reshapeLastDim(s.getShape()[3])) {
+            if (skip.isInit() && skip.reshapeLastDim(s.getShape()[3])) {
                 skip = skip + s;
             } else {
                 skip = s;
             }
 
             Tensor<float> x1;
-            if (gcn_bool && supports.size() > 0) {
-                gconv(i).forward(x, supports, x1);
+            if (gcn_bool && new_supports.size() > 0) {
+                gconv(i).forward(x, new_supports, x1);
             } else {
                 residual_convs(i).forward(x, x1);
             }
@@ -187,7 +184,6 @@ public:
         end_conv1.forward(skip_relu, end1);
         Tensor<float> skip_relu2;
         end_relu2.forward(end1, skip_relu2);
-        Tensor<float> end2;
-        end_conv1.forward(skip_relu2, output);
+        end_conv2.forward(skip_relu2, output);
     };
 };
