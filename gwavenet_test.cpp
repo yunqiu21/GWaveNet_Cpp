@@ -49,7 +49,7 @@ void test_gwavenet() {
     loader.setFileName("data/expected.json");
     loader.setItemName("preds");
     loader.load(expected);
-    cout << "same as expected: " << expected.isSame(output, 0.1) << endl;
+    cout << "error: " << expected.MSE(output) << endl;
 }
 
 int main() {

@@ -37,6 +37,7 @@ public:
     bool copyData(const Tensor &src);
 
     bool isSame(const Tensor &src, float tolerance = 1e-4);
+    T MSE(const Tensor &src);
 
     // initializaiton
     void init(const int *s, int d);
@@ -130,6 +131,17 @@ bool Tensor<T>::isSame(const Tensor &src, float tolerance) {
     }
 
     return true;
+}
+
+template <typename T>
+T Tensor<T>::MSE(const Tensor &src) {
+    // check shape
+    assert(src.dim == dim && memcmp(src.shape, shape, dim * sizeof(T)) == 0);
+    T square_error = 0;
+    for (int i = 0; i < dataCount; i++) {
+        square_error += (src.data[i] - data[i]) * (src.data[i] - data[i]);        
+    }
+    return square_error / (T)dataCount;
 }
 
 template <typename T>
