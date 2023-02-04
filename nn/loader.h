@@ -77,6 +77,7 @@ void Loader<T>::load(Tensor<T>& output) {
             }
         }
     }
+    delete[] shape;
 };
 
 #endif
