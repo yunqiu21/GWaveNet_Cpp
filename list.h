@@ -11,7 +11,7 @@ using namespace std;
 template <typename T>
 class List {
 private:
-    T *list;
+    T *list = nullptr;
     int sz = 0;
     int cap = 0;
 

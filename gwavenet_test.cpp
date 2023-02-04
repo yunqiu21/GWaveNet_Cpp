@@ -1,23 +1,24 @@
 #include "gwavenet.h"
+#include "list.h"
+#include "nn/activation.h"
 #include "nn/loader.h"
 #include "nn/matmul.h"
-#include "nn/activation.h"
-#include "list.h"
-#include <iostream>
 #include <chrono>
+#include <iostream>
 
 using namespace std;
 
-void test_gwavenet() {    
-    cout << "==== test gwavenet ====" << endl;  
+void test_gwavenet() {
+    cout << "==== test gwavenet ====" << endl;
     /* set timer */
-    chrono::steady_clock::time_point begin = chrono::steady_clock::now();  
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
     /* declare gwavenet class */
     GWaveNet gwavenet(207);
     /* load nodevec1, nodevec2 */
+    cout << "begin loading" << endl;
     gwavenet.load("data/metr_exp1_best_2.73.json");
     chrono::steady_clock::time_point loaded = chrono::steady_clock::now();
-    cout << "Loading finished in " << (chrono::duration_cast<chrono::nanoseconds> (loaded - begin).count()) * 1e-9 << " seconds." << endl;
+    cout << "Loading finished in " << (chrono::duration_cast<chrono::nanoseconds>(loaded - begin).count()) * 1e-9 << " seconds." << endl;
     // /* run gwavenet forward */
     // Tensor<float> output;
     // gwavenet.forward(output);
