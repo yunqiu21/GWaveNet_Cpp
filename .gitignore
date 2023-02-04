@@ -10,3 +10,5 @@
 # app
 gwavenet
 
+# compile file
+*.dSYM
