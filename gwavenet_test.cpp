@@ -10,8 +10,20 @@ using namespace std;
 
 void test_gwavenet() {
     cout << "==== test gwavenet ====" << endl;
+    /* load supports */
+    Loader<float> loader;
+    List<Tensor<float>> supports;
+    Tensor<float> support0;
+    loader.setFileName("data/supports.json");
+    loader.setItemName("supports.0");
+    loader.load(support0);
+    Tensor<float> support1;
+    loader.setItemName("supports.1");
+    loader.load(support1);
+    supports.add(support0);
+    supports.add(support1);
     /* declare gwavenet class */
-    GWaveNet gwavenet(207);
+    GWaveNet gwavenet(207, 0.3, supports);
     /* load gwavenet parameters */
     cout << "begin loading" << endl;
     chrono::steady_clock::time_point load_begin = chrono::steady_clock::now();
@@ -19,11 +31,10 @@ void test_gwavenet() {
     chrono::steady_clock::time_point load_end = chrono::steady_clock::now();
     cout << "Load parameters finished in " << (chrono::duration_cast<chrono::nanoseconds>(load_end - load_begin).count()) * 1e-9 << " seconds." << endl;
     /* load input */
-    Loader<float> loader;
     Tensor<float> input;
     loader.setFileName("data/input.json");
     loader.setItemName("testx");
-    loader.load(input);  
+    loader.load(input);
     /* check input dimension */
     int in_dim = input.getDim();
     cout << "input dimension: " << in_dim << ", shape: ";

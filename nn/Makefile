@@ -22,5 +22,5 @@ activation_test: activation_test.cpp activation.h tensor.h
 matmul_test: matmul_test.cpp matmul.h tensor.h
 	g++ -std=c++14 matmul_test.cpp -o matmul_test
 
-clean: 
+clean:
 	rm *_test *.o

@@ -52,7 +52,7 @@ public:
           adp(Adp(num_nodes)),
           end_conv1(Conv2d(skip_channels, end_channels, 1, 1)),
           end_conv2(Conv2d(end_channels, out_dim, 1, 1)) {
-        
+
         int receptive_field = 1;
 
         if (gcn_bool && addaptadj) {
@@ -116,7 +116,7 @@ public:
         }
         for (int i = 0; i < gconv.size(); i++) {
             gconv(i).load(fileName,
-                          "gconv."+ to_string(i) +".weight",
+                          "gconv."+ to_string(i) +".mlp.mlp.weight",
                           "gconv."+ to_string(i) +".mlp.mlp.bias");
         }
         end_conv1.load(fileName, "end_conv_1.weight", "end_conv_1.bias");
@@ -166,7 +166,7 @@ public:
             }
 
             Tensor<float> x1;
-            if (gcn_bool && new_supports.size() > 0) {
+            if (gcn_bool && supports.size() > 0) {
                 gconv(i).forward(x, new_supports, x1);
             } else {
                 residual_convs(i).forward(x, x1);

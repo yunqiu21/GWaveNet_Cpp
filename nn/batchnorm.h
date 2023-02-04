@@ -16,7 +16,7 @@ private:
     Tensor<float> gamma; // shape (kernel_h * kernel_w)
     Tensor<float> beta;
     int channels;
-    float eps = 0.00005;
+    float eps = 1e-5;
     float momentum = 0.1;
 
 public:

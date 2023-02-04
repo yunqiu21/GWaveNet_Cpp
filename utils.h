@@ -4,7 +4,7 @@
 #include <json/json.h>
 
 void LoadData(float data[32][32][1][2], int shape[4], string fileName, string itemName)
-{   
+{
     shape[0] = 32;
     shape[1] = 32;
     shape[2] = 1;

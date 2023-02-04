@@ -4,13 +4,13 @@
 using namespace std;
 
 void test_Loader() {
-    cout << "==== test Loader ====" << endl;  
+    cout << "==== test Loader ====" << endl;
 
     Loader<float> loader;
     Tensor<float> output;
     loader.setFileName("../data/metr_epoch_33_2.8.json");
     loader.setItemName("filter_convs.1.bias");
-    loader.load(output);  
+    loader.load(output);
 
     int dim = output.getDim();
     cout << "output dimension: " << dim << ", shape: ";

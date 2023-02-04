@@ -139,7 +139,7 @@ T Tensor<T>::MSE(const Tensor &src) {
     assert(src.dim == dim && memcmp(src.shape, shape, dim * sizeof(T)) == 0);
     T square_error = 0;
     for (int i = 0; i < dataCount; i++) {
-        square_error += (src.data[i] - data[i]) * (src.data[i] - data[i]);        
+        square_error += (src.data[i] - data[i]) * (src.data[i] - data[i]);
     }
     return square_error / (T)dataCount;
 }

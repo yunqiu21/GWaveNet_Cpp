@@ -4,7 +4,7 @@
 using namespace std;
 
 void test_matmul() {
-    cout << "==== test matrix multiplication ====" << endl;    
+    cout << "==== test matrix multiplication ====" << endl;
 
     Tensor<float> t1;
     t1.init(4, 5);
