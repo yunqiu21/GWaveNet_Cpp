@@ -18,10 +18,10 @@ protected:
 
     void clear() {
         if (data)
-            delete data;
+            delete[] data;
         data = nullptr;
         if (shape)
-            delete shape;
+            delete[] shape;
         shape = nullptr;
         dim = 0;
         dataCount = 0;

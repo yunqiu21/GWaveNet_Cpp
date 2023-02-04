@@ -2,6 +2,9 @@
 #include "gcn.h"
 #include "nn/batchnorm.h"
 #include <cassert>
+#include <string>
+#include <iostream>
+using namespace std;
 
 class GWaveNet {
 private:
@@ -81,6 +84,51 @@ public:
         }
     };
 
+    void load(string fileName) {
+        // Conv2d start_conv;
+        cout << "Loading Conv2d start_conv" << endl;
+        start_conv.load(fileName, "start_conv.weight", "start_conv.bias");
+        // List<Conv2d> filter_convs;
+        cout << "Loading List<Conv2d> filter_convs" << endl;
+        for (int i = 0; i < filter_convs.size(); i++) {
+            filter_convs(i).load(fileName, "filter_convs."+ to_string(i) +".weight", "filter_convs."+ to_string(i) +".bias");
+        }
+        // List<Conv2d> gate_convs;
+        cout << "Loading List<Conv2d> gate_convs" << endl;
+        for (int i = 0; i < gate_convs.size(); i++) {
+            gate_convs(i).load(fileName, "gate_convs."+ to_string(i) +".weight", "gate_convs."+ to_string(i) +".bias");
+        }
+        // List<Conv2d> residual_convs;
+        cout << "Loading List<Conv2d> residual_convs" << endl;
+        for (int i = 0; i < residual_convs.size(); i++) {
+            residual_convs(i).load(fileName, "residual_convs."+ to_string(i) +".weight", "residual_convs."+ to_string(i) +".bias");
+        }
+        // List<Conv2d> skip_convs;
+        cout << "Loading List<Conv2d> skip_convs" << endl;
+        for (int i = 0; i < skip_convs.size(); i++) {
+            skip_convs(i).load(fileName, "skip_convs."+ to_string(i) +".weight", "skip_convs."+ to_string(i) +".bias");
+        }
+        // List<BatchNorm2D> bn;
+        cout << "Loading List<BatchNorm2D> bn" << endl;
+        for (int i = 0; i < bn.size(); i++) {
+            bn(i).load(fileName, "bn."+ to_string(i) +".weight", "bn."+ to_string(i) +".bias");
+        }
+        // List<GCN> gconv;
+        cout << "Loading List<GCN> gconv" << endl;
+        for (int i = 0; i < gconv.size(); i++) {
+            gconv(i).load(fileName, "gconv."+ to_string(i) +".weight", "gconv."+ to_string(i) +".mlp.mlp.bias");
+        }
+        // Conv2d end_conv1;
+        cout << "Loading Conv2d end_conv1" << endl;
+        end_conv1.load(fileName, "end_conv_1.weight", "end_conv_1.bias");
+        // Conv2d end_conv2;
+        cout << "Loading Conv2d end_conv2" << endl;
+        end_conv2.load(fileName, "end_conv_2.weight", "end_conv_2.bias");
+        // Adp adp;
+        cout << "Loading Adp adp" << endl;
+        adp.load(fileName, "nodevec1", "nodevec2");
+    }
+
     void forward(Tensor<float> &input, Tensor<float> &output) {
         assert(input.getDim() == 4 && input.getShape()[3] > receptive_field);
 
@@ -143,7 +191,3 @@ public:
         end_conv1.forward(skip_relu2, output);
     };
 };
-
-int main() {
-    GWaveNet(207);
-}
