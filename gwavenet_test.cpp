@@ -25,11 +25,11 @@ void test_gwavenet() {
     /* declare gwavenet class */
     GWaveNet gwavenet(207, 0.3, supports);
     /* load gwavenet parameters */
-    cout << "begin loading" << endl;
+    cout << "Begin load..." << endl;
     chrono::steady_clock::time_point load_begin = chrono::steady_clock::now();
     gwavenet.load("data/metr_exp1_best_2.73.json");
     chrono::steady_clock::time_point load_end = chrono::steady_clock::now();
-    cout << "Load parameters finished in " << (chrono::duration_cast<chrono::nanoseconds>(load_end - load_begin).count()) * 1e-9 << " seconds." << endl;
+    cout << "Load finished in " << (chrono::duration_cast<chrono::nanoseconds>(load_end - load_begin).count()) * 1e-9 << " seconds." << endl;
     /* load input */
     Tensor<float> input;
     loader.setFileName("data/input.json");
@@ -37,20 +37,21 @@ void test_gwavenet() {
     loader.load(input);
     /* check input dimension */
     int in_dim = input.getDim();
-    cout << "input dimension: " << in_dim << ", shape: ";
+    cout << "Input dimension: " << in_dim << ", shape: ";
     for (int i = 0; i < in_dim; i++) {
         cout << input.getShape()[i] << " ";
     }
     cout << endl;
     /* run gwavenet forward */
     Tensor<float> output;
+    cout << "Begin inference..." << endl;
     chrono::steady_clock::time_point forward_begin = chrono::steady_clock::now();
     gwavenet.forward(input, output);
     chrono::steady_clock::time_point forward_end = chrono::steady_clock::now();
     cout << "Inference finished in " << (chrono::duration_cast<chrono::nanoseconds> (forward_end - forward_begin).count()) * 1e-9 << " seconds." << endl;
     /* check output dimension */
     int dim = output.getDim();
-    cout << "output dimension: " << dim << ", shape: ";
+    cout << "Output dimension: " << dim << ", shape: ";
     for (int i = 0; i < dim; i++) {
         cout << output.getShape()[i] << " ";
     }
@@ -60,7 +61,7 @@ void test_gwavenet() {
     loader.setFileName("data/expected.json");
     loader.setItemName("preds");
     loader.load(expected);
-    cout << "error: " << expected.MSE(output) << endl;
+    cout << "Same as expected: " << boolalpha << expected.isSame(output) << endl;
 }
 
 int main() {

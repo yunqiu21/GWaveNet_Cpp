@@ -112,7 +112,9 @@ public:
         for (int i = 0; i < bn.size(); i++) {
             bn(i).load(fileName,
                        "bn."+ to_string(i) +".weight",
-                       "bn."+ to_string(i) +".bias");
+                       "bn."+ to_string(i) +".bias",
+                       "bn."+ to_string(i) +".running_mean",
+                       "bn."+ to_string(i) +".running_var");
         }
         for (int i = 0; i < gconv.size(); i++) {
             gconv(i).load(fileName,

@@ -13,8 +13,10 @@ using namespace std;
 
 class BatchNorm2D {
 private:
-    Tensor<float> gamma; // shape (kernel_h * kernel_w)
+    Tensor<float> gamma;
     Tensor<float> beta;
+    Tensor<float> running_mean;
+    Tensor<float> running_var;
     int channels;
     float eps = 1e-5;
     float momentum = 0.1;
@@ -33,13 +35,19 @@ public:
         beta.setData(array);
     };
 
-    void load(string fileName, string gammaName, string betaName) {
+    void load(string fileName, string gammaName, string betaName,
+              string runningMean = "", string runningVar = "") {
         Loader<float> loader;
         loader.setFileName(fileName);
         loader.setItemName(gammaName);
         loader.load(gamma);
         loader.setItemName(betaName);
         loader.load(beta);
+        if (runningMean == "" || runningVar == "") return;
+        loader.setItemName(runningMean);
+        loader.load(running_mean);
+        loader.setItemName(runningVar);
+        loader.load(running_var);
     }
 
     void forward(Tensor<float> &input, Tensor<float> &output) {
@@ -54,27 +62,35 @@ public:
 
         for (int c = 0; c < C; c++) {
             /* get mean */
-            float sum = 0;
-            for (int n = 0; n < N; n++) {
-                for (int h = 0; h < H; h++) {
-                    for (int w = 0; w < W; w++) {
-                        sum += input(n, c, h, w);
+            float mean;
+            if (running_mean.isInit()) {
+                mean = running_mean(c);
+            } else {
+                float sum = 0;
+                for (int n = 0; n < N; n++) {
+                    for (int h = 0; h < H; h++) {
+                        for (int w = 0; w < W; w++) {
+                            sum += input(n, c, h, w);
+                        }
                     }
                 }
+                mean = sum / (N * H * W);
             }
-            float mean = sum / (N * H * W);
-
             /* get variance */
-            sum = 0;
-            for (int n = 0; n < N; n++) {
-                for (int h = 0; h < H; h++) {
-                    for (int w = 0; w < W; w++) {
-                        sum += pow(input(n, c, h, w) - mean, 2);
+            float variance;
+            if (running_var.isInit()) {
+                variance = running_var(c);
+            } else {
+                float sum = 0;
+                for (int n = 0; n < N; n++) {
+                    for (int h = 0; h < H; h++) {
+                        for (int w = 0; w < W; w++) {
+                            sum += pow(input(n, c, h, w) - mean, 2);
+                        }
                     }
                 }
+                variance = sum / (N * H * W);
             }
-
-            float variance = sum / (N * H * W);
             /* set output */
             for (int n = 0; n < N; n++) {
                 for (int h = 0; h < H; h++) {
