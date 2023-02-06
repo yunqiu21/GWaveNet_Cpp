@@ -6,7 +6,7 @@ using namespace std;
 Tensor<float> input; /* input for all tests except softmax */
 
 void test_ReLU() {
-    cout << "==== test ReLU ====" << endl;    
+    cout << "==== test ReLU ====" << endl;
 
     ReLU relu;
     Tensor<float> relu_output;
@@ -34,7 +34,7 @@ void test_ReLU() {
 }
 
 void test_LeakyReLU() {
-    cout << "==== test LeakyReLU ====" << endl;    
+    cout << "==== test LeakyReLU ====" << endl;
 
     LeakyReLU leaky_relu;
     Tensor<float> leaky_relu_output;
@@ -67,7 +67,7 @@ void test_LeakyReLU() {
 }
 
 void test_Sigmoid() {
-    cout << "==== test Sigmoid ====" << endl;    
+    cout << "==== test Sigmoid ====" << endl;
 
     Sigmoid sigmoid;
     Tensor<float> sigmoid_output;
@@ -95,7 +95,7 @@ void test_Sigmoid() {
 }
 
 void test_Tanh() {
-    cout << "==== test Tanh ====" << endl;    
+    cout << "==== test Tanh ====" << endl;
 
     Tanh tanh;
     Tensor<float> tanh_output;
@@ -124,7 +124,7 @@ void test_Tanh() {
 }
 
 void test_Softmax() {
-    cout << "==== test Softmax ====" << endl;    
+    cout << "==== test Softmax ====" << endl;
 
     Tensor<float> softmax_input;
     softmax_input.init(4, 5);
@@ -167,7 +167,7 @@ int main() {
          0.1978,  1.0399, -2.0217,  1.9208,  0.7178, -1.7369, -0.0659, -0.3337,
         -1.2640, -0.9317, -0.7178, -1.0136};
     input.setData(input_data);
-    
+
     test_ReLU();
     test_LeakyReLU();
     test_Sigmoid();

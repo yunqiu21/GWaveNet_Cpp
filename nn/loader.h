@@ -10,7 +10,7 @@ using namespace std;
 
 template <typename T>
 class Loader {
-protected:   
+protected:
     string fileName;
     string itemName;
 
@@ -32,7 +32,7 @@ void Loader<T>::setItemName(string s) {
 };
 
 template <typename T>
-void Loader<T>::load(Tensor<T>& output) {   
+void Loader<T>::load(Tensor<T>& output) {
     Json::Value values;
     std::ifstream value_file(fileName, std::ifstream::binary);
     value_file >> values;
@@ -42,20 +42,20 @@ void Loader<T>::load(Tensor<T>& output) {
     for (int i = 0; i < dim; i++) {
         shape[i] = values[itemName]["shape"][i].asInt();
     }
-    output.init(shape, dim);   
+    output.init(shape, dim);
     float *it = output.begin();
-    if (dim == 1) {       
-        for (int k = 0; k < shape[0]; k++) {            
+    if (dim == 1) {
+        for (int k = 0; k < shape[0]; k++) {
             *it = values[itemName]["__ndarray__"][k].asFloat();
-            output.next(it);            
-        }       
-    } else if (dim == 2) {       
+            output.next(it);
+        }
+    } else if (dim == 2) {
         for (int k = 0; k < shape[0]; k++) {
             for (int l = 0; l < shape[1]; l++) {
                 *it = values[itemName]["__ndarray__"][k][l].asFloat();
                 output.next(it);
             }
-        }       
+        }
     } else if (dim == 3) {
         for (int j = 0; j < shape[0]; j++) {
             for (int k = 0; k < shape[1]; k++) {
@@ -64,7 +64,7 @@ void Loader<T>::load(Tensor<T>& output) {
                     output.next(it);
                 }
             }
-        }       
+        }
     } else if (dim == 4) {
         for (int i = 0; i < shape[0]; i++) {
             for (int j = 0; j < shape[1]; j++) {
@@ -77,6 +77,7 @@ void Loader<T>::load(Tensor<T>& output) {
             }
         }
     }
+    delete[] shape;
 };
 
 #endif

@@ -7,7 +7,7 @@
 using namespace std;
 
 void test_adp() {
-    cout << "==== test adp ====" << endl;    
+    cout << "==== test adp ====" << endl;
     /* declare adp class */
     Adp adp(6);
     /* load nodevec1, nodevec2 */

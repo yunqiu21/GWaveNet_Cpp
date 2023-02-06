@@ -18,10 +18,10 @@ protected:
 
     void clear() {
         if (data)
-            delete data;
+            delete[] data;
         data = nullptr;
         if (shape)
-            delete shape;
+            delete[] shape;
         shape = nullptr;
         dim = 0;
         dataCount = 0;
@@ -37,6 +37,7 @@ public:
     bool copyData(const Tensor &src);
 
     bool isSame(const Tensor &src, float tolerance = 1e-4);
+    T MSE(const Tensor &src);
 
     // initializaiton
     void init(const int *s, int d);
@@ -63,6 +64,7 @@ public:
     void setData(T *d);
 
     bool reshapeLastDim(int sz);
+    bool padLastDim(int sz);
     Tensor<T> operator+(Tensor<T> const &t);
 };
 
@@ -129,6 +131,17 @@ bool Tensor<T>::isSame(const Tensor &src, float tolerance) {
     }
 
     return true;
+}
+
+template <typename T>
+T Tensor<T>::MSE(const Tensor &src) {
+    // check shape
+    assert(src.dim == dim && memcmp(src.shape, shape, dim * sizeof(T)) == 0);
+    T square_error = 0;
+    for (int i = 0; i < dataCount; i++) {
+        square_error += (src.data[i] - data[i]) * (src.data[i] - data[i]);
+    }
+    return square_error / (T)dataCount;
 }
 
 template <typename T>
@@ -266,6 +279,41 @@ bool Tensor<T>::reshapeLastDim(int sz) {
             for (int k = 0; k < H; k++) {
                 memcpy(newData + i * C * H * sz + j * H * sz + k * sz,
                        data + i * C * H * W + j * H * W + k * W + W - sz, sz * sizeof(T));
+            }
+        }
+    }
+
+    delete[] data;
+    data = newData;
+
+    return true;
+}
+
+template <typename T>
+bool Tensor<T>::padLastDim(int sz) {
+    assert(dim == 4);
+    if (shape[3] >= sz) {
+        return false;
+    }
+
+    int N = shape[0];
+    int C = shape[1];
+    int H = shape[2];
+    int W = shape[3];
+
+    dataCount /= W;
+    dataCount *= sz;
+    shape[3] = sz;
+    T *newData = new T[dataCount];
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < C; j++) {
+            for (int k = 0; k < H; k++) {
+                for (int l = 0; l < sz - W; l++) {
+                    newData[i * C * H * sz + j * H * sz + k * sz + l] = 0;
+                }
+                memcpy(newData + i * C * H * sz + j * H * sz + k * sz + sz - W,
+                       data + i * C * H * W + j * H * W + k * W, W * sizeof(T));
             }
         }
     }
